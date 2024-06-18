@@ -35,6 +35,16 @@
         .section {
             margin-bottom: 20px;
         }
+        .signature-pad {
+            border: 1px solid black;
+            width: 100%;
+            height: 100px;
+        }
+        .wide-input {
+            width: calc(100% - 16px);
+            padding: 8px;
+            margin: 8px 0;
+        }
     </style>
 </head>
 <body>
@@ -143,6 +153,7 @@
                         <td><input type="checkbox" name="상대정확도시험" value="상대정확도시험"> 상대정확도시험</td>
                     </tr>
                 </table>
+                <textarea name="시험특이사항" placeholder="시험에서의 특이사항 입력" class="wide-input"></textarea>
             </div>
             <div class="section">
                 <h3>확인자 정보</h3>
@@ -160,7 +171,7 @@
                         <td><input type="text" name="사업장_부서" style="width: 100%;"></td>
                         <td><input type="text" name="사업장_직위" style="width: 100%;"></td>
                         <td><input type="text" name="사업장_성명" style="width: 100%;"></td>
-                        <td><input type="text" name="사업장_서명" style="width: 100%;"></td>
+                        <td><div class="signature-pad" id="sign-pad1"></div></td>
                     </tr>
                     <tr>
                         <td>유지관리 업체</td>
@@ -168,13 +179,13 @@
                         <td><input type="text" name="유지관리_부서" style="width: 100%;"></td>
                         <td><input type="text" name="유지관리_직위" style="width: 100%;"></td>
                         <td><input type="text" name="유지관리_성명" style="width: 100%;"></td>
-                        <td><input type="text" name="유지관리_서명" style="width: 100%;"></td>
+                        <td><div class="signature-pad" id="sign-pad2"></div></td>
                     </tr>
                     <tr>
                         <td>관제센터</td>
                         <td><input type="text" name="관제센터_소속" style="width: 100%;"></td>
                         <td colspan="3">충청권환경본부 환경서비스처 유역관리부</td>
-                        <td><input type="text" name="관제센터_성명" style="width: 100%;"></td>
+                        <td><div class="signature-pad" id="sign-pad3"></div></td>
                     </tr>
                 </table>
             </div>
@@ -185,5 +196,37 @@
             <button type="submit">제출</button>
         </form>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const pads = ['sign-pad1', 'sign-pad2', 'sign-pad3'];
+            pads.forEach(padId => {
+                const canvas = document.getElementById(padId);
+                const ctx = canvas.getContext('2d');
+                let drawing = false;
+
+                canvas.addEventListener('mousedown', function (e) {
+                    drawing = true;
+                    ctx.beginPath();
+                    ctx.moveTo(e.offsetX, e.offsetY);
+                });
+
+                canvas.addEventListener('mousemove', function (e) {
+                    if (drawing) {
+                        ctx.lineTo(e.offsetX, e.offsetY);
+                        ctx.stroke();
+                    }
+                });
+
+                canvas.addEventListener('mouseup', function () {
+                    drawing = false;
+                });
+
+                canvas.addEventListener('mouseleave', function () {
+                    drawing = false;
+                });
+            });
+        });
+    </script>
 </body>
 </html>
