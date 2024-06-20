@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     let currentPad = null;
 
+    // 캔버스 크기 조정 함수
     function resizeCanvas() {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
         const width = canvas.offsetWidth;
@@ -20,28 +21,31 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
+    // 서명 버튼 클릭 시 현재 서명란을 설정
     document.querySelectorAll(".signature-btn").forEach(button => {
         button.addEventListener("click", function () {
             currentPad = document.querySelector(`#${this.dataset.target}`);
-            console.log("Current Pad:", currentPad);  // 콘솔 로그 추가
+            console.log("Current Pad:", currentPad); // 콘솔 로그 추가
             modal.style.display = "block";
             resizeCanvas();
         });
     });
 
+    // 서명 창 닫기 버튼
     document.querySelector(".close").addEventListener("click", function () {
         modal.style.display = "none";
         signaturePad.clear();
     });
 
+    // 서명 저장 버튼
     document.getElementById("saveSignature").addEventListener("click", function () {
         if (currentPad && !signaturePad.isEmpty()) {
             const imgData = signaturePad.toDataURL("image/png");
-            console.log("Image Data URL:", imgData);  // 콘솔 로그 추가
+            console.log("Image Data URL:", imgData); // 콘솔 로그 추가
             const img = new Image();
             img.src = imgData;
             img.style.width = "100%";
-            img.style.height = "100px";  // 서명란 높이에 맞추기 위해 고정 높이 설정
+            img.style.height = "100px"; // 서명란 높이에 맞추기 위해 고정 높이 설정
             currentPad.innerHTML = "";
             currentPad.appendChild(img);
             modal.style.display = "none";
@@ -49,10 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // 서명 지우기 버튼
     document.getElementById("clearSignature").addEventListener("click", function () {
         signaturePad.clear();
     });
 
+    // 모달 외부 클릭 시 모달 닫기
     window.onclick = function (event) {
         if (event.target === modal) {
             modal.style.display = "none";
@@ -60,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // PDF 저장 버튼
     document.getElementById("save-pdf").addEventListener("click", function () {
         const doc = new jsPDF();
         const form = document.getElementById("form");
