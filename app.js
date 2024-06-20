@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll(".signature-btn").forEach(button => {
         button.addEventListener("click", function () {
             currentPad = document.querySelector(`#${this.dataset.target}`);
-            console.log("Current Pad:", currentPad);  // 콘솔 로그 추가
             modal.style.display = "block";
             resizeCanvas();
         });
@@ -34,11 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("saveSignature").addEventListener("click", function () {
         if (currentPad && !signaturePad.isEmpty()) {
             const imgData = signaturePad.toDataURL("image/png");
-            console.log("Image Data URL:", imgData);  // 콘솔 로그 추가
             const img = new Image();
             img.src = imgData;
             img.style.width = "100%";
-            img.style.height = "100px";  // 서명란 높이에 맞추기 위해 고정 높이 설정
+            img.style.height = "100px";
             currentPad.innerHTML = "";
             currentPad.appendChild(img);
             modal.style.display = "none";
@@ -129,7 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = pad.querySelector('img');
             if (img) {
                 const imgData = img.src;
-                console.log("Adding Image to PDF:", imgData);  // 콘솔 로그 추가
                 doc.addImage(imgData, 'PNG', 160, doc.lastAutoTable.finalY + 10 + (index * 30), 30, 15);
             }
         });
