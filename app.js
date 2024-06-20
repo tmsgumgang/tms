@@ -152,11 +152,12 @@ function loadSignature(padId) {
 
 function displaySignature(padId, imgData) {
     const canvas = document.getElementById(padId);
-    const context = canvas.getContext("2d");
+    const parent = canvas.parentNode;
     const img = new Image();
     img.onload = function() {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+        img.style.width = canvas.width + 'px';
+        img.style.height = canvas.height + 'px';
+        parent.replaceChild(img, canvas);
     };
     img.src = imgData;
 }
