@@ -135,8 +135,7 @@
                         <td><input type="text" name="사업장_직위" style="width: 100%;"></td>
                         <td><input type="text" name="사업장_성명" style="width: 100%;"></td>
                         <td>
-                            <div id="sign-pad1" class="signature-pad"></div>
-                            <button type="button" class="signature-btn" data-target="sign-pad1">서명</button>
+                            <canvas id="sign-pad1" class="signature-pad"></canvas>
                         </td>
                     </tr>
                     <tr>
@@ -146,8 +145,7 @@
                         <td><input type="text" name="유지관리_직위" style="width: 100%;"></td>
                         <td><input type="text" name="유지관리_성명" style="width: 100%;"></td>
                         <td>
-                            <div id="sign-pad2" class="signature-pad"></div>
-                            <button type="button" class="signature-btn" data-target="sign-pad2">서명</button>
+                            <canvas id="sign-pad2" class="signature-pad"></canvas>
                         </td>
                     </tr>
                     <tr>
@@ -155,8 +153,7 @@
                         <td><input type="text" name="관제센터_소속" style="width: 100%;"></td>
                         <td colspan="3">충청권환경본부 환경서비스처 유역관리부</td>
                         <td>
-                            <div id="sign-pad3" class="signature-pad"></div>
-                            <button type="button" class="signature-btn" data-target="sign-pad3">서명</button>
+                            <canvas id="sign-pad3" class="signature-pad"></canvas>
                         </td>
                     </tr>
                 </table>
@@ -167,16 +164,6 @@
             </div>
             <button type="button" id="save-pdf">제출</button>
         </form>
-    </div>
-
-    <!-- 서명을 위한 팝업 창 -->
-    <div id="signatureModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <canvas id="signatureCanvas" style="border: 1px solid black; width: 100%; height: 400px;"></canvas>
-            <button type="button" id="saveSignature" class="signature-btn">서명 저장</button>
-            <button type="button" id="clearSignature" class="signature-btn">서명 지우기</button>
-        </div>
     </div>
     <script src="app.js"></script>
 </body>
