@@ -99,15 +99,33 @@ function saveSignature(padId) {
     const canvas = document.getElementById(padId);
     const signaturePad = new SignaturePad(canvas);
     const imgData = signaturePad.toDataURL("image/png");
-    const img = new Image();
-    img.src = imgData;
-    img.style.width = "100%";
-    img.style.height = "150px"; // 서명란 높이에 맞추기 위해 고정 높이 설정
-    canvas.parentNode.replaceChild(img, canvas);
+    localStorage.setItem(padId, imgData); // 로컬 스토리지에 이미지 데이터 저장
+}
+
+function loadSignature(padId) {
+    const canvas = document.getElementById(padId);
+    const context = canvas.getContext("2d");
+    const imgData = localStorage.getItem(padId);
+
+    if (imgData) {
+        const img = new Image();
+        img.onload = function() {
+            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+        img.src = imgData;
+    }
 }
 
 function clearSignature(padId) {
     const canvas = document.getElementById(padId);
     const signaturePad = new SignaturePad(canvas);
     signaturePad.clear();
+    localStorage.removeItem(padId); // 로컬 스토리지에서 이미지 데이터 삭제
 }
+
+// 페이지 로드 시 서명 로드
+document.addEventListener('DOMContentLoaded', () => {
+    loadSignature('sign-pad1');
+    loadSignature('sign-pad2');
+    loadSignature('sign-pad3');
+});
