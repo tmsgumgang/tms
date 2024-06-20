@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas();
+
+        // Load signature if it exists
+        loadSignature(canvas.id);
     });
 
     document.getElementById("save-pdf").addEventListener("click", function () {
@@ -93,11 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         doc.save("현장확인서.pdf");
     });
-
-    // 페이지 로드 시 서명 로드
-    loadSignature('sign-pad1');
-    loadSignature('sign-pad2');
-    loadSignature('sign-pad3');
 });
 
 function saveSignature(padId) {
@@ -120,6 +118,8 @@ function saveSignature(padId) {
     .then(data => {
         console.log(data);
         alert('서명이 저장되었습니다.');
+        // 캔버스를 이미지로 변환하여 수정 불가능하게 함
+        displaySignature(padId, imgData);
     })
     .catch(error => {
         console.error('Error:', error);
@@ -129,7 +129,6 @@ function saveSignature(padId) {
 
 function loadSignature(padId) {
     const canvas = document.getElementById(padId);
-    const context = canvas.getContext("2d");
 
     fetch(`/get-signature/${padId}`)
     .then(response => {
@@ -141,14 +140,25 @@ function loadSignature(padId) {
     .then(blob => {
         const img = new Image();
         img.onload = function() {
-            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+            displaySignature(padId, img.src);
         };
         img.src = URL.createObjectURL(blob);
     })
     .catch(error => {
         console.error('Error:', error);
-        alert(error.message);
+        // 서명을 불러올 수 없을 때 팝업창 뜨지 않도록 함
     });
+}
+
+function displaySignature(padId, imgData) {
+    const canvas = document.getElementById(padId);
+    const context = canvas.getContext("2d");
+    const img = new Image();
+    img.onload = function() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+    img.src = imgData;
 }
 
 function clearSignature(padId) {
