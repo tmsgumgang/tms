@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 캔버스 크기 조정 함수
     function resizeCanvas() {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        // 캔버스 요소의 CSS 크기를 기준으로 크기 조정
         const width = canvas.offsetWidth;
         const height = canvas.offsetHeight;
         canvas.width = width * ratio;
