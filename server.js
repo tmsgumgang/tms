@@ -23,6 +23,20 @@ app.post('/save-signature', (req, res) => {
     });
 });
 
+// Endpoint to get the signature
+app.get('/get-signature/:padId', (req, res) => {
+    const padId = req.params.padId;
+    const filePath = path.join(__dirname, `${padId}.png`);
+
+    fs.readFile(filePath, (err, data) => {
+        if (err) {
+            return res.status(404).send('Signature not found');
+        }
+        res.writeHead(200, { 'Content-Type': 'image/png' });
+        res.end(data, 'binary');
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
