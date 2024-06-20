@@ -46,7 +46,7 @@ th, td {
 .signature-pad {
     border: 1px solid black;
     width: 100%;
-    height: 200px; /* 서명란 높이 확대 */
+    height: 150px; /* 서명란 높이 확대 */
     position: relative;
 }
 
