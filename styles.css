@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: white;  /* 변경된 부분 */
+    background-color: white;
     color: #333;
     display: flex;
     flex-direction: column;
@@ -46,13 +46,8 @@ th, td {
 .signature-pad {
     border: 1px solid black;
     width: 100%;
-    height: 100px; /* 서명란 높이 고정 */
+    height: 150px; /* 서명란 높이 확대 */
     position: relative;
-}
-
-.signature-pad img {
-    width: 100%;
-    height: 100%; /* 이미지가 서명란 크기에 맞추어 표시되도록 조정 */
 }
 
 .wide-input {
@@ -71,24 +66,4 @@ th, td {
     font-size: 16px;
     margin: 4px 2px;
     cursor: pointer;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.1); /* 투명도를 더 낮게 설정 */
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
 }
