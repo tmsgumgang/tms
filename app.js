@@ -101,6 +101,12 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveSignature(padId) {
     const canvas = document.getElementById(padId);
     const signaturePad = new SignaturePad(canvas);
+
+    if (signaturePad.isEmpty()) {
+        alert("서명이 없습니다.");
+        return;
+    }
+
     const imgData = signaturePad.toDataURL("image/png");
 
     // 서버로 서명 데이터를 전송
