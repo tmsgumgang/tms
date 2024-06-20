@@ -1,61 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById("signatureModal");
-    const canvas = document.getElementById("signatureCanvas");
-    const signaturePad = new SignaturePad(canvas, {
-        backgroundColor: 'rgb(255, 255, 255)'
-    });
-    let currentPad = null;
-
-    function resizeCanvas() {
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio;
-        canvas.height = canvas.offsetHeight * ratio;
-        canvas.getContext("2d").scale(ratio, ratio);
-        signaturePad.clear();
-    }
-
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
-
-    document.querySelectorAll(".signature-btn").forEach(button => {
-        button.addEventListener("click", function () {
-            currentPad = document.querySelector(`#${this.dataset.target}`);
-            modal.style.display = "block";
-            resizeCanvas();
+    document.querySelectorAll(".signature-pad").forEach(canvas => {
+        const signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgb(255, 255, 255)'
         });
-    });
 
-    document.querySelector(".close").addEventListener("click", function () {
-        modal.style.display = "none";
-        signaturePad.clear();
-    });
-
-    document.getElementById("saveSignature").addEventListener("click", function () {
-        if (currentPad && !signaturePad.isEmpty()) {
-            const imgData = signaturePad.toDataURL("image/png");
-            const img = new Image();
-            img.src = imgData;
-            img.style.width = "100%";
-            img.style.height = "100px";
-            currentPad.innerHTML = "";
-            currentPad.appendChild(img);
-            modal.style.display = "none";
-            signaturePad.clear();
-        } else {
-            console.log("Signature pad is empty or currentPad is null");
-        }
-    });
-
-    document.getElementById("clearSignature").addEventListener("click", function () {
-        signaturePad.clear();
-    });
-
-    window.onclick = function (event) {
-        if (event.target === modal) {
-            modal.style.display = "none";
+        function resizeCanvas() {
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            canvas.getContext("2d").scale(ratio, ratio);
             signaturePad.clear();
         }
-    };
+
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+    });
 
     document.getElementById("save-pdf").addEventListener("click", function () {
         const doc = new jsPDF();
@@ -123,12 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
             body: confirmers
         });
 
-        document.querySelectorAll('.signature-pad').forEach((pad, index) => {
-            const img = pad.querySelector('img');
-            if (img) {
-                const imgData = img.src;
-                doc.addImage(imgData, 'PNG', 160, doc.lastAutoTable.finalY + 10 + (index * 30), 30, 15);
-            }
+        document.querySelectorAll('.signature-pad').forEach((canvas, index) => {
+            const imgData = canvas.toDataURL("image/png");
+            doc.addImage(imgData, 'PNG', 160, doc.lastAutoTable.finalY + 10 + (index * 30), 30, 15);
         });
 
         doc.text("※ 이외에 관제센터에서의 사후 확인과정에서 추가로 문제점이 발견될 수 있습니다.", 10, doc.lastAutoTable.finalY + 20);
