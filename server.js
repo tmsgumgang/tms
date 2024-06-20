@@ -10,13 +10,15 @@ app.use(bodyParser.json({ limit: '10mb' })); // to support JSON-encoded bodies
 
 // Ensure the signatures directory exists
 const signaturesDir = path.join(__dirname, 'signatures');
-if (!fs.existsSync(signaturesDir)) {
-    fs.mkdirSync(signaturesDir, { recursive: true });
-}
+fs.mkdirSync(signaturesDir, { recursive: true });
 
 // Endpoint to save the signature
 app.post('/save-signature', (req, res) => {
     const { padId, imgData } = req.body;
+    if (!padId || !imgData) {
+        return res.status(400).send('Missing padId or imgData');
+    }
+    
     const filePath = path.join(signaturesDir, `${padId}.png`);
 
     // Decode base64 image
