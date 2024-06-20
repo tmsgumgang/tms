@@ -7,10 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     let currentPad = null;
 
+    // 캔버스 크기 조정 함수
     function resizeCanvas() {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio;
-        canvas.height = canvas.offsetHeight * ratio;
+        // 캔버스 요소의 CSS 크기를 기준으로 크기 조정
+        const width = canvas.offsetWidth;
+        const height = canvas.offsetHeight;
+        canvas.width = width * ratio;
+        canvas.height = height * ratio;
         canvas.getContext("2d").scale(ratio, ratio);
         signaturePad.clear(); // 캔버스 크기 조정 후 서명을 초기화
     }
@@ -18,11 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas(); // 초기 로드 시 캔버스 크기 조정
 
-
     document.querySelectorAll(".signature-btn").forEach(button => {
         button.addEventListener("click", function () {
             currentPad = document.getElementById(this.dataset.target);
             modal.style.display = "block";
+            resizeCanvas(); // 서명 창 열릴 때 캔버스 크기 조정
         });
     });
 
