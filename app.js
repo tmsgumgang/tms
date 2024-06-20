@@ -72,19 +72,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const confirmers = [
-            ["사업장", formData.get("사업장_부서"), formData.get("사업장_직위"), formData.get("사업장_성명")],
-            ["유지관리 업체", formData.get("유지관리_업체"), formData.get("유지관리_부서"), formData.get("유지관리_직위"), formData.get("유지관리_성명")],
-            ["관제센터", formData.get("관제센터_소속"), "충청권환경본부 환경서비스처 유역관리부", formData.get("관제센터_성명")]
+            ["사업장", formData.get("사업장_성명")],
+            ["유지관리 업체", formData.get("유지관리_성명")],
+            ["관제센터", formData.get("관제센터_성명")]
         ];
         doc.autoTable({
             startY: doc.lastAutoTable.finalY + 10,
-            head: [["확인자", "부서", "직위", "성명"]],
+            head: [["확인자", "성명"]],
             body: confirmers
         });
 
         document.querySelectorAll('.signature-pad').forEach((canvas, index) => {
             const imgData = canvas.toDataURL("image/png");
-            doc.addImage(imgData, 'PNG', 160, doc.lastAutoTable.finalY + 10 + (index * 30), 30, 15);
+            doc.addImage(imgData, 'PNG', 160, doc.lastAutoTable.finalY + 10 + (index * 40), 40, 20);
         });
 
         doc.text("※ 이외에 관제센터에서의 사후 확인과정에서 추가로 문제점이 발견될 수 있습니다.", 10, doc.lastAutoTable.finalY + 20);
