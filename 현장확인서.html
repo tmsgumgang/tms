@@ -121,32 +121,41 @@
                 <h3>확인자 정보</h3>
                 <table>
                     <tr>
-                        <th>소속기관</th>
-                        <th>(서명)</th>
+                        <th style="width: 30%;">소속기관</th>
+                        <th style="width: 70%;">(서명)</th>
                     </tr>
                     <tr>
                         <td>사업장</td>
-                        <td><canvas id="sign-pad1" class="signature-pad"></canvas></td>
+                        <td rowspan="2">
+                            <canvas id="sign-pad1" class="signature-pad"></canvas>
+                            <button type="button" class="signature-btn" data-target="sign-pad1" onclick="saveSignature('sign-pad1')">저장</button>
+                            <button type="button" class="signature-btn" data-target="sign-pad1" onclick="clearSignature('sign-pad1')">지우기</button>
+                        </td>
                     </tr>
                     <tr>
                         <td><input type="text" name="사업장_성명" style="width: 100%;"></td>
-                        <td><input type="text" name="사업장_서명" style="width: 100%;"></td>
                     </tr>
                     <tr>
                         <td>유지관리 업체</td>
-                        <td><canvas id="sign-pad2" class="signature-pad"></canvas></td>
+                        <td rowspan="2">
+                            <canvas id="sign-pad2" class="signature-pad"></canvas>
+                            <button type="button" class="signature-btn" data-target="sign-pad2" onclick="saveSignature('sign-pad2')">저장</button>
+                            <button type="button" class="signature-btn" data-target="sign-pad2" onclick="clearSignature('sign-pad2')">지우기</button>
+                        </td>
                     </tr>
                     <tr>
                         <td><input type="text" name="유지관리_성명" style="width: 100%;"></td>
-                        <td><input type="text" name="유지관리_서명" style="width: 100%;"></td>
                     </tr>
                     <tr>
                         <td>관제센터</td>
-                        <td><canvas id="sign-pad3" class="signature-pad"></canvas></td>
+                        <td rowspan="2">
+                            <canvas id="sign-pad3" class="signature-pad"></canvas>
+                            <button type="button" class="signature-btn" data-target="sign-pad3" onclick="saveSignature('sign-pad3')">저장</button>
+                            <button type="button" class="signature-btn" data-target="sign-pad3" onclick="clearSignature('sign-pad3')">지우기</button>
+                        </td>
                     </tr>
                     <tr>
                         <td><input type="text" name="관제센터_성명" style="width: 100%;"></td>
-                        <td><input type="text" name="관제센터_서명" style="width: 100%;"></td>
                     </tr>
                 </table>
             </div>
