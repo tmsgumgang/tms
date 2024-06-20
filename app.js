@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll(".signature-btn").forEach(button => {
         button.addEventListener("click", function () {
-            currentPad = document.getElementById(this.dataset.target);
+            currentPad = document.querySelector(`#${this.dataset.target}`);
             modal.style.display = "block";
             resizeCanvas(); // 서명 창 열릴 때 캔버스 크기 조정
         });
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = new Image();
             img.src = imgData;
             img.style.width = "100%";
-            img.style.height = "100%";
+            img.style.height = "100px"; // 서명란 높이에 맞추기 위해 고정 높이 설정
             currentPad.innerHTML = "";
             currentPad.appendChild(img);
             modal.style.display = "none";
