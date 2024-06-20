@@ -7,6 +7,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     let currentPad = null;
 
+    function resizeCanvas() {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
+        signaturePad.clear(); // 캔버스 크기 조정 후 서명을 초기화
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas(); // 초기 로드 시 캔버스 크기 조정
+
+
     document.querySelectorAll(".signature-btn").forEach(button => {
         button.addEventListener("click", function () {
             currentPad = document.getElementById(this.dataset.target);
