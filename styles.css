@@ -10,10 +10,10 @@ body {
 }
 
 .container {
-    width: 210mm;
-    height: 297mm;
+    width: 100%;
+    max-width: 800px;
     margin: auto;
-    padding: 20mm;
+    padding: 20px;
     box-sizing: border-box;
     background: white;
     border-radius: 8px;
@@ -46,7 +46,7 @@ th, td {
 .signature-pad {
     border: 1px solid black;
     width: 100%;
-    height: 150px; /* 서명란 높이 확대 */
+    height: 200px; /* 서명란 높이 확대 */
     position: relative;
 }
 
