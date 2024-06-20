@@ -93,6 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         doc.save("현장확인서.pdf");
     });
+
+    // 페이지 로드 시 서명 로드
+    loadSignature('sign-pad1');
+    loadSignature('sign-pad2');
+    loadSignature('sign-pad3');
 });
 
 function saveSignature(padId) {
@@ -122,12 +127,36 @@ function saveSignature(padId) {
     });
 }
 
+function loadSignature(padId) {
+    const canvas = document.getElementById(padId);
+    const context = canvas.getContext("2d");
+
+    fetch(`/get-signature/${padId}`)
+    .then(response => {
+        if (response.ok) {
+            return response.blob();
+        }
+        throw new Error('서명을 불러올 수 없습니다.');
+    })
+    .then(blob => {
+        const img = new Image();
+        img.onload = function() {
+            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+        img.src = URL.createObjectURL(blob);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert(error.message);
+    });
+}
+
 function clearSignature(padId) {
     const canvas = document.getElementById(padId);
     const signaturePad = new SignaturePad(canvas);
     signaturePad.clear();
 
-    // 서버에 저장된 서명 데이터 삭제 (옵션)
+    // 서버에 저장된 서명 데이터 삭제
     fetch(`/save-signature/${padId}`, {
         method: 'DELETE'
     })
