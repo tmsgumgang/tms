@@ -99,33 +99,45 @@ function saveSignature(padId) {
     const canvas = document.getElementById(padId);
     const signaturePad = new SignaturePad(canvas);
     const imgData = signaturePad.toDataURL("image/png");
-    localStorage.setItem(padId, imgData); // 로컬 스토리지에 이미지 데이터 저장
-}
 
-function loadSignature(padId) {
-    const canvas = document.getElementById(padId);
-    const context = canvas.getContext("2d");
-    const imgData = localStorage.getItem(padId);
-
-    if (imgData) {
-        const img = new Image();
-        img.onload = function() {
-            context.drawImage(img, 0, 0, canvas.width, canvas.height);
-        };
-        img.src = imgData;
-    }
+    // 서버로 서명 데이터를 전송
+    fetch('/save-signature', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            padId: padId,
+            imgData: imgData
+        })
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(data);
+        alert('서명이 저장되었습니다.');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('서명 저장에 실패했습니다.');
+    });
 }
 
 function clearSignature(padId) {
     const canvas = document.getElementById(padId);
     const signaturePad = new SignaturePad(canvas);
     signaturePad.clear();
-    localStorage.removeItem(padId); // 로컬 스토리지에서 이미지 데이터 삭제
-}
 
-// 페이지 로드 시 서명 로드
-document.addEventListener('DOMContentLoaded', () => {
-    loadSignature('sign-pad1');
-    loadSignature('sign-pad2');
-    loadSignature('sign-pad3');
-});
+    // 서버에 저장된 서명 데이터 삭제 (옵션)
+    fetch(`/save-signature/${padId}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(data);
+        alert('서명이 삭제되었습니다.');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('서명 삭제에 실패했습니다.');
+    });
+}
