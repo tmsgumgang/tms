@@ -94,3 +94,20 @@ document.addEventListener('DOMContentLoaded', () => {
         doc.save("현장확인서.pdf");
     });
 });
+
+function saveSignature(padId) {
+    const canvas = document.getElementById(padId);
+    const signaturePad = new SignaturePad(canvas);
+    const imgData = signaturePad.toDataURL("image/png");
+    const img = new Image();
+    img.src = imgData;
+    img.style.width = "100%";
+    img.style.height = "150px"; // 서명란 높이에 맞추기 위해 고정 높이 설정
+    canvas.parentNode.replaceChild(img, canvas);
+}
+
+function clearSignature(padId) {
+    const canvas = document.getElementById(padId);
+    const signaturePad = new SignaturePad(canvas);
+    signaturePad.clear();
+}
