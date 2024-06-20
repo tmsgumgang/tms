@@ -72,14 +72,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const confirmers = [
-            ["사업장", formData.get("사업장_성명")],
-            ["유지관리 업체", formData.get("유지관리_성명")],
-            ["관제센터", formData.get("관제센터_성명")]
+            ["소속기관", "서명"]
         ];
         doc.autoTable({
             startY: doc.lastAutoTable.finalY + 10,
-            head: [["확인자", "성명"]],
-            body: confirmers
+            head: confirmers,
+            body: [
+                ["사업장", formData.get("사업장_성명")],
+                ["유지관리 업체", formData.get("유지관리_성명")],
+                ["관제센터", formData.get("관제센터_성명")]
+            ]
         });
 
         document.querySelectorAll('.signature-pad').forEach((canvas, index) => {
