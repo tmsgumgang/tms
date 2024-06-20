@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById("signatureModal");
     const canvas = document.getElementById("signatureCanvas");
-    const ctx = canvas.getContext("2d");
     const signaturePad = new SignaturePad(canvas, {
         backgroundColor: 'rgb(255, 255, 255)'
     });
@@ -9,10 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resizeCanvas() {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        const width = canvas.offsetWidth;
-        const height = canvas.offsetHeight;
-        canvas.width = width * ratio;
-        canvas.height = height * ratio;
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
         canvas.getContext("2d").scale(ratio, ratio);
         signaturePad.clear();
     }
@@ -46,6 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
             currentPad.appendChild(img);
             modal.style.display = "none";
             signaturePad.clear();
+        } else {
+            console.log("Signature pad is empty or currentPad is null");
         }
     });
 
