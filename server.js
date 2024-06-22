@@ -10,7 +10,9 @@ app.use(bodyParser.json({ limit: '10mb' })); // to support JSON-encoded bodies
 
 // Ensure the signatures directory exists
 const signaturesDir = path.join(__dirname, 'signatures');
-fs.mkdirSync(signaturesDir, { recursive: true });
+if (!fs.existsSync(signaturesDir)) {
+    fs.mkdirSync(signaturesDir, { recursive: true });
+}
 
 // Endpoint to save the signature
 app.post('/save-signature', (req, res) => {
