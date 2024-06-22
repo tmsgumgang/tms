@@ -7,6 +7,7 @@ const app = express();
 const PORT = 3000;
 
 app.use(bodyParser.json({ limit: '10mb' })); // to support JSON-encoded bodies
+app.use(express.static('public'));
 
 // Ensure the signatures directory exists
 const signaturesDir = path.join(__dirname, 'signatures');
