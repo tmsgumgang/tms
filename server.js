@@ -31,6 +31,7 @@ app.post('/save-signature', (req, res) => {
             console.error(`Error saving signature: ${err}`);
             return res.status(500).send('Failed to save the signature');
         }
+        console.log(`Signature saved: ${filePath}`);
         res.send('Signature saved successfully');
     });
 });
@@ -45,6 +46,7 @@ app.get('/get-signature/:padId', (req, res) => {
             console.error(`Error reading signature: ${err}`);
             return res.status(404).send('Signature not found');
         }
+        console.log(`Signature retrieved: ${filePath}`);
         res.writeHead(200, { 'Content-Type': 'image/png' });
         res.end(data);
     });
