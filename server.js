@@ -4,10 +4,10 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json({ limit: '10mb' })); // to support JSON-encoded bodies
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public'))); // serve static files from 'public' directory
 
 // Ensure the signatures directory exists
 const signaturesDir = path.join(__dirname, 'signatures');
@@ -28,6 +28,7 @@ app.post('/save-signature', (req, res) => {
     const base64Data = imgData.replace(/^data:image\/png;base64,/, '');
     fs.writeFile(filePath, base64Data, 'base64', (err) => {
         if (err) {
+            console.error(`Error saving signature: ${err}`);
             return res.status(500).send('Failed to save the signature');
         }
         res.send('Signature saved successfully');
@@ -41,6 +42,7 @@ app.get('/get-signature/:padId', (req, res) => {
 
     fs.readFile(filePath, (err, data) => {
         if (err) {
+            console.error(`Error reading signature: ${err}`);
             return res.status(404).send('Signature not found');
         }
         res.writeHead(200, { 'Content-Type': 'image/png' });
