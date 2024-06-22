@@ -6,37 +6,31 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(bodyParser.json({ limit: '10mb' })); // to support JSON-encoded bodies
-app.use(express.static(path.join(__dirname, 'public'))); // serve static files from 'public' directory
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Ensure the signatures directory exists
 const signaturesDir = path.join(__dirname, 'signatures');
 if (!fs.existsSync(signaturesDir)) {
     fs.mkdirSync(signaturesDir, { recursive: true });
 }
 
-// Endpoint to save the signature
 app.post('/save-signature', (req, res) => {
     const { padId, imgData } = req.body;
     if (!padId || !imgData) {
         return res.status(400).send('Missing padId or imgData');
     }
-    
-    const filePath = path.join(signaturesDir, `${padId}.png`);
 
-    // Decode base64 image
+    const filePath = path.join(signaturesDir, `${padId}.png`);
     const base64Data = imgData.replace(/^data:image\/png;base64,/, '');
     fs.writeFile(filePath, base64Data, 'base64', (err) => {
         if (err) {
             console.error(`Error saving signature: ${err}`);
             return res.status(500).send('Failed to save the signature');
         }
-        console.log(`Signature saved: ${filePath}`);
         res.send('Signature saved successfully');
     });
 });
 
-// Endpoint to get the signature
 app.get('/get-signature/:padId', (req, res) => {
     const padId = req.params.padId;
     const filePath = path.join(signaturesDir, `${padId}.png`);
@@ -46,7 +40,6 @@ app.get('/get-signature/:padId', (req, res) => {
             console.error(`Error reading signature: ${err}`);
             return res.status(404).send('Signature not found');
         }
-        console.log(`Signature retrieved: ${filePath}`);
         res.writeHead(200, { 'Content-Type': 'image/png' });
         res.end(data);
     });
