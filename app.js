@@ -91,14 +91,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // html2canvas를 사용하여 PDF로 변환할 HTML 요소를 캡처합니다.
+        const A4_WIDTH = 210;
+        const A4_HEIGHT = 297;
+
         html2canvas(form, { scale: 2 }).then(canvas => {
             const imgData = canvas.toDataURL('image/png');
             const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'pt', 'a4');
+            const pdf = new jsPDF('p', 'mm', 'a4');
             const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfWidth = A4_WIDTH;
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+            let position = 0;
+
+            while (position < pdfHeight) {
+                pdf.addImage(imgData, 'PNG', 0, -position, pdfWidth, pdfHeight);
+                position += A4_HEIGHT;
+                if (position < pdfHeight) {
+                    pdf.addPage();
+                }
+            }
+
             pdf.save('현장확인서.pdf');
         });
     });
