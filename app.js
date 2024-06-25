@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const signaturePads = {};
 
     document.querySelectorAll(".signature-pad").forEach(canvas => {
@@ -61,22 +61,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
+
+        // 폰트 설정
+        pdf.setFont("helvetica");
         pdf.setFontSize(10);
 
-        // 제목
+        // PDF 내용 생성
         pdf.setFontSize(16);
         pdf.text('수질자동측정기기 현장확인서', 105, 20, { align: 'center' });
         pdf.setFontSize(12);
         pdf.text('[WTMS-QI-101-02(rev.0)]', 105, 30, { align: 'center' });
         pdf.setFontSize(10);
 
-        // 기본 정보
         pdf.text(`사업장명: ${data['사업장명']}`, 20, 40);
         pdf.text(`방류구번호: ${data['방류구번호']}`, 120, 40);
         pdf.text(`시험일자: ${data['시험일자']}`, 20, 50);
 
-        // 측정기 모델
-        pdf.text('측정기 모델', 20, 60);
+        // 측정기 모델 정보
+        pdf.text('측정기 모델:', 20, 60);
         pdf.text(`pH: ${data['pH_모델명']} (${data['pH_제작사']}, ${data['pH_제작국']})`, 30, 70);
         pdf.text(`TOC: ${data['TOC_모델명']} (${data['TOC_제작사']}, ${data['TOC_제작국']})`, 30, 80);
         pdf.text(`SS: ${data['SS_모델명']} (${data['SS_제작사']}, ${data['SS_제작국']})`, 30, 90);
@@ -86,12 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
         pdf.text(`자동시료채취기: ${data['자동시료채취기_모델명']} (${data['자동시료채취기_제작사']}, ${data['자동시료채취기_제작국']})`, 30, 130);
 
         // 전송기 모델
-        pdf.text('전송기 모델', 20, 140);
+        pdf.text('전송기 모델:', 20, 140);
         pdf.text(`D/L: ${data['DL_모델명']}, ${data['DL_버전']}`, 30, 150);
         pdf.text(`FEP: ${data['FEP_모델명']}, ${data['FEP_버전']}`, 30, 160);
 
         // 시험 종류
-        pdf.text('시험 종류', 20, 170);
+        pdf.text('시험 종류:', 20, 170);
         let yPos = 180;
         if (data['통합시험']) pdf.text('☑ 통합시험', 30, yPos), yPos += 10;
         if (data['확인검사']) pdf.text('☑ 확인검사', 30, yPos), yPos += 10;
@@ -100,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pdf.text(`시험특이사항: ${data['시험특이사항']}`, 20, yPos + 10);
 
         // 서명
-        pdf.text('확인자 정보', 20, 220);
+        pdf.text('확인자 정보:', 20, 220);
         const signatures = ['sign-pad1', 'sign-pad2', 'sign-pad3'];
         const titles = ['사업장', '유지관리 업체', '관제센터'];
         const yPositions = [230, 250, 270];
