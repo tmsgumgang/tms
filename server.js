@@ -15,14 +15,13 @@ if (!fs.existsSync(signaturesDir)) {
 }
 
 app.post('/save-signature', (req, res) => {
-    const { padId, imgData } = req.body;
-    if (!padId || !imgData) {
-        return res.status(400).send('Missing padId or imgData');
+    const { padId, signatureData } = req.body;
+    if (!padId || !signatureData) {
+        return res.status(400).send('Missing padId or signatureData');
     }
 
-    const filePath = path.join(signaturesDir, `${padId}.png`);
-    const base64Data = imgData.replace(/^data:image\/png;base64,/, '');
-    fs.writeFile(filePath, base64Data, 'base64', (err) => {
+    const filePath = path.join(signaturesDir, `${padId}.json`);
+    fs.writeFile(filePath, JSON.stringify(signatureData), (err) => {
         if (err) {
             console.error(`Error saving signature: ${err}`);
             return res.status(500).send('Failed to save the signature');
@@ -33,15 +32,14 @@ app.post('/save-signature', (req, res) => {
 
 app.get('/get-signature/:padId', (req, res) => {
     const padId = req.params.padId;
-    const filePath = path.join(signaturesDir, `${padId}.png`);
+    const filePath = path.join(signaturesDir, `${padId}.json`);
 
-    fs.readFile(filePath, (err, data) => {
+    fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
             console.error(`Error reading signature: ${err}`);
             return res.status(404).send('Signature not found');
         }
-        res.writeHead(200, { 'Content-Type': 'image/png' });
-        res.end(data);
+        res.json(JSON.parse(data));
     });
 });
 
