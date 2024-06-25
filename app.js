@@ -42,79 +42,34 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const signatureData = signaturePad.toData();
-
-        console.log('Saving signature data:', signatureData); // 디버깅을 위한 로그
-
-        fetch('/save-signature', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ padId, signatureData })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.text();
-        })
-        .then(data => {
-            console.log('Server response:', data); // 서버 응답 로그
-            alert('서명이 저장되었습니다.');
-            localStorage.setItem(padId, JSON.stringify(signatureData));
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('서명 저장에 실패했습니다. 오류: ' + error.message);
-        });
+        const imgData = signaturePad.toDataURL("image/png");
+        localStorage.setItem(padId, imgData);
+        alert('서명이 저장되었습니다.');
     }
 
     function loadSignature(padId) {
         const savedSignature = localStorage.getItem(padId);
         if (savedSignature) {
-            const signatureData = JSON.parse(savedSignature);
-            displaySignature(padId, signatureData);
-        } else {
-            fetch(`/get-signature/${padId}`)
-            .then(response => {
-                if (!response.ok) {
-                    if (response.status === 404) {
-                        console.log('No saved signature found');
-                        return null;
-                    }
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(signatureData => {
-                if (signatureData) {
-                    localStorage.setItem(padId, JSON.stringify(signatureData));
-                    displaySignature(padId, signatureData);
-                }
-            })
-            .catch(error => console.error('Error:', error));
+            displaySignature(padId, savedSignature);
         }
     }
 
-    function displaySignature(padId, signatureData) {
+    function displaySignature(padId, imgData) {
+        const canvas = document.getElementById(padId);
         const signaturePad = signaturePads[padId];
-        signaturePad.fromData(signatureData);
+        const ctx = canvas.getContext('2d');
+        
+        const img = new Image();
+        img.onload = () => {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            signaturePad._isEmpty = false;
+        };
+        img.src = imgData;
     }
 
     function clearSignature(padId) {
         const signaturePad = signaturePads[padId];
         signaturePad.clear();
         localStorage.removeItem(padId);
-        
-        fetch(`/clear-signature/${padId}`, { method: 'POST' })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.text();
-        })
-        .then(data => console.log('Server response:', data))
-        .catch(error => console.error('Error clearing signature on server:', error));
     }
 });
