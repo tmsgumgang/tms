@@ -78,93 +78,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('save-pdf').addEventListener('click', async () => {
         const form = document.getElementById('form');
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
 
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        // NotoSans 폰트를 기본으로 설정합니다.
-        doc.setFont('Noto Sans KR');
-
-        let yOffset = 10;
-        doc.setFontSize(12);
-        
-        // 기본 정보
-        doc.text("기본 정보", 10, yOffset);
-        yOffset += 10;
-        doc.text(`사업장명: ${data['사업장명']}`, 10, yOffset);
-        yOffset += 10;
-        doc.text(`방류구번호: ${data['방류구번호']}`, 10, yOffset);
-        yOffset += 10;
-        doc.text(`시험일자: ${data['시험일자']}`, 10, yOffset);
-        yOffset += 20;
-
-        // 측정기 모델
-        doc.text("측정기 모델", 10, yOffset);
-        yOffset += 10;
-        const fields = ['pH', 'TOC', 'SS', 'TN', 'TP', '유량계', '자동시료채취기'];
-        fields.forEach(field => {
-            doc.text(`${field} 모델명: ${data[`${field}_모델명`]}`, 10, yOffset);
-            yOffset += 10;
-            doc.text(`${field} 제작사: ${data[`${field}_제작사`]}`, 10, yOffset);
-            yOffset += 10;
-            doc.text(`${field} 제작국: ${data[`${field}_제작국`]}`, 10, yOffset);
-            yOffset += 20;
-        });
-
-        // 전송기 모델
-        doc.text("전송기 모델", 10, yOffset);
-        yOffset += 10;
-        const transmissionFields = ['DL', 'FEP'];
-        transmissionFields.forEach(field => {
-            doc.text(`${field} 모델명: ${data[`${field}_모델명`]}`, 10, yOffset);
-            yOffset += 10;
-            doc.text(`${field} 버전: ${data[`${field}_버전`]}`, 10, yOffset);
-            yOffset += 20;
-        });
-
-        // 시험 종류
-        doc.text("시험 종류", 10, yOffset);
-        yOffset += 10;
-        if (data['통합시험']) {
-            doc.text("통합시험", 10, yOffset);
-            yOffset += 10;
-        }
-        if (data['확인검사']) {
-            doc.text("확인검사", 10, yOffset);
-            yOffset += 10;
-        }
-        if (data['상대정확도시험']) {
-            doc.text("상대정확도시험", 10, yOffset);
-            yOffset += 10;
-        }
-        doc.text(`시험특이사항: ${data['시험특이사항']}`, 10, yOffset);
-        yOffset += 20;
-
-        // 서명
+        // PDF에 추가할 서명 이미지를 저장합니다.
         const signatures = ['sign-pad1', 'sign-pad2', 'sign-pad3'];
         for (const id of signatures) {
-            const savedSignature = localStorage.getItem(id);
-            if (savedSignature) {
-                const img = new Image();
-                await new Promise((resolve) => {
-                    img.onload = resolve;
-                    img.src = savedSignature;
-                });
-                const imgProps = doc.getImageProperties(img);
-                const pdfWidth = 50;
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                doc.addImage(savedSignature, 'PNG', 10, yOffset, pdfWidth, pdfHeight);
-                yOffset += pdfHeight + 10;
-            }
+            const canvas = document.getElementById(id);
+            const imgData = canvas.toDataURL('image/png');
+            const imgElement = new Image();
+            imgElement.src = imgData;
+            await new Promise(resolve => imgElement.onload = resolve);
+            canvas.dataset.signature = imgData;
         }
 
-        // 추가 정보
-        doc.text("추가 정보", 10, yOffset);
-        yOffset += 10;
-        doc.text("※ 이외에 관제센터에서의 사후 확인과정에서 추가로 문제점이 발견될 수 있습니다.", 10, yOffset);
-
-        doc.save('현장확인서.pdf');
+        // html2canvas를 사용하여 PDF로 변환할 HTML 요소를 캡처합니다.
+        html2canvas(form, { scale: 2 }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'pt', 'a4');
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save('현장확인서.pdf');
+        });
     });
 });
