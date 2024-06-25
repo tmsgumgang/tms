@@ -12,19 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.width = canvas.offsetWidth * ratio;
             canvas.height = canvas.offsetHeight * ratio;
             canvas.getContext("2d").scale(ratio, ratio);
-            
-            // 캔버스 크기 변경 후 서명 다시 로드
-            const savedSignature = localStorage.getItem(canvas.id);
-            if (savedSignature) {
-                displaySignature(canvas.id, savedSignature);
-            } else {
-                signaturePad.clear(); // 저장된 서명이 없으면 캔버스를 지웁니다.
-            }
+            signaturePad.clear(); // 캔버스 크기 변경 시 패드를 초기화합니다.
+            loadSignature(canvas.id);
         }
 
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas();
-        loadSignature(canvas.id);
     });
 
     document.querySelectorAll('.signature-btn.save').forEach(button => {
@@ -49,20 +42,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const imgData = signaturePad.toDataURL("image/png");
+        const signatureData = signaturePad.toData();
+
+        localStorage.setItem(padId, JSON.stringify(signatureData));
 
         fetch('/save-signature', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ padId, imgData })
+            body: JSON.stringify({ padId, signatureData })
         })
         .then(response => response.text())
         .then(data => {
             alert('서명이 저장되었습니다.');
-            localStorage.setItem(padId, imgData);
-            displaySignature(padId, imgData);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -73,38 +66,22 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadSignature(padId) {
         const savedSignature = localStorage.getItem(padId);
         if (savedSignature) {
-            displaySignature(padId, savedSignature);
+            const signatureData = JSON.parse(savedSignature);
+            displaySignature(padId, signatureData);
         } else {
             fetch(`/get-signature/${padId}`)
-            .then(response => response.ok ? response.blob() : Promise.reject('서명을 불러올 수 없습니다.'))
-            .then(blob => {
-                const reader = new FileReader();
-                reader.onloadend = function() {
-                    const imgData = reader.result;
-                    localStorage.setItem(padId, imgData);
-                    displaySignature(padId, imgData);
-                }
-                reader.readAsDataURL(blob);
+            .then(response => response.ok ? response.json() : Promise.reject('서명을 불러올 수 없습니다.'))
+            .then(signatureData => {
+                localStorage.setItem(padId, JSON.stringify(signatureData));
+                displaySignature(padId, signatureData);
             })
             .catch(error => console.error('Error:', error));
         }
     }
 
-    function displaySignature(padId, imgData) {
-        const canvas = document.getElementById(padId);
+    function displaySignature(padId, signatureData) {
         const signaturePad = signaturePads[padId];
-        const ctx = canvas.getContext('2d');
-        
-        const img = new Image();
-        img.onload = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // 캔버스의 크기에 맞게 이미지를 그립니다.
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            
-            signaturePad._isEmpty = false;
-        };
-        img.src = imgData;
+        signaturePad.fromData(signatureData);
     }
 
     function clearSignature(padId) {
