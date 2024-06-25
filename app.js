@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     const signaturePads = {};
 
     document.querySelectorAll(".signature-pad").forEach(canvas => {
@@ -8,11 +8,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         signaturePads[canvas.id] = signaturePad;
 
         function resizeCanvas() {
+            const data = signaturePad.toData(); // 서명 데이터를 임시로 저장합니다.
             const ratio = Math.max(window.devicePixelRatio || 1, 1);
             canvas.width = canvas.offsetWidth * ratio;
             canvas.height = canvas.offsetHeight * ratio;
             canvas.getContext("2d").scale(ratio, ratio);
-            signaturePad.clear();
+            signaturePad.clear(); // 캔버스 크기 변경 시 패드를 초기화합니다.
+            if (data) {
+                signaturePad.fromData(data);
+            }
         }
 
         window.addEventListener("resize", resizeCanvas);
@@ -35,13 +39,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function saveSignature(padId) {
         const signaturePad = signaturePads[padId];
+
         if (signaturePad.isEmpty()) {
             alert("서명이 없습니다.");
             return;
         }
+
         const imgData = signaturePad.toDataURL("image/png");
         localStorage.setItem(padId, imgData);
         alert('서명이 저장되었습니다.');
+    }
+
+    function loadSignature(padId) {
+        const savedSignature = localStorage.getItem(padId);
+        if (savedSignature) {
+            displaySignature(padId, savedSignature);
+        }
+    }
+
+    function displaySignature(padId, imgData) {
+        const canvas = document.getElementById(padId);
+        const signaturePad = signaturePads[padId];
+        const ctx = canvas.getContext('2d');
+
+        const img = new Image();
+        img.onload = () => {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            signaturePad.fromDataURL(imgData);
+        };
+        img.src = imgData;
     }
 
     function clearSignature(padId) {
@@ -51,20 +77,74 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     document.getElementById('save-pdf').addEventListener('click', async () => {
+        const form = document.getElementById('form');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
+        pdf.setFontSize(10);
 
-        const form = document.getElementById('form');
-        
-        const canvas = await html2canvas(form);
-        
-        const imgData = canvas.toDataURL('image/png');
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        // 기본 정보
+        pdf.text(data['사업장명'], 40, 37);
+        pdf.text(data['방류구번호'], 140, 37);
+        pdf.text(data['시험일자'], 40, 43);
 
-        pdf.save('수질자동측정기기_현장확인서.pdf');
+        // 측정기 모델
+        const startY = 58;
+        const stepY = 8;
+        let currentY = startY;
+
+        const fields = ['pH', 'TOC', 'SS', 'TN', 'TP', '유량계', '자동시료채취기'];
+        fields.forEach(field => {
+            pdf.text(data[`${field}_모델명`], 22, currentY);
+            pdf.text(data[`${field}_제작사`], 68, currentY);
+            pdf.text(data[`${field}_제작국`], 108, currentY);
+            currentY += stepY;
+        });
+
+        // 전송기 모델
+        pdf.text(data['DL_모델명'], 22, currentY);
+        pdf.text(data['DL_버전'], 68, currentY);
+        currentY += stepY;
+
+        pdf.text(data['FEP_모델명'], 22, currentY);
+        pdf.text(data['FEP_버전'], 68, currentY);
+        currentY += stepY;
+
+        // 시험 종류
+        const typesY = currentY + 10;
+        if (data['통합시험']) {
+            pdf.text('통합시험', 22, typesY);
+        }
+        if (data['확인검사']) {
+            pdf.text('확인검사', 52, typesY);
+        }
+        if (data['상대정확도시험']) {
+            pdf.text('상대정확도시험', 92, typesY);
+        }
+
+        pdf.text(data['시험특이사항'], 22, typesY + 10);
+
+        // 서명
+        const signatures = ['sign-pad1', 'sign-pad2', 'sign-pad3'];
+        const yPositions = [187, 202, 217];
+
+        for (let i = 0; i < signatures.length; i++) {
+            const savedSignature = localStorage.getItem(signatures[i]);
+            if (savedSignature) {
+                const img = new Image();
+                await new Promise((resolve) => {
+                    img.onload = resolve;
+                    img.src = savedSignature;
+                });
+                const imgProps = pdf.getImageProperties(img);
+                const pdfWidth = 50;
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                pdf.addImage(savedSignature, 'PNG', 150, yPositions[i], pdfWidth, pdfHeight);
+            }
+        }
+
+        pdf.save('현장확인서.pdf');
     });
 });
