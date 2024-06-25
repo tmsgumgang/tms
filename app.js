@@ -93,24 +93,28 @@ document.addEventListener('DOMContentLoaded', () => {
         // html2canvas를 사용하여 PDF로 변환할 HTML 요소를 캡처합니다.
         const A4_WIDTH = 210;
         const A4_HEIGHT = 297;
+        const margin = 10; // 여백 설정
+        const pdfWidth = A4_WIDTH - 2 * margin;
+        const pdfHeight = A4_HEIGHT - 2 * margin;
 
         html2canvas(form, { scale: 2 }).then(canvas => {
             const imgData = canvas.toDataURL('image/png');
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
             const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = A4_WIDTH;
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
+            let heightLeft = imgHeight;
             let position = 0;
-            let pageHeight = pdf.internal.pageSize.getHeight();
 
-            while (position < imgProps.height) {
-                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                position += pageHeight;
-                if (position < imgProps.height) {
-                    pdf.addPage();
-                }
+            pdf.addImage(imgData, 'PNG', margin, position, pdfWidth, imgHeight);
+            heightLeft -= pdfHeight;
+
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', margin, position, pdfWidth, imgHeight);
+                heightLeft -= pdfHeight;
             }
 
             pdf.save('현장확인서.pdf');
