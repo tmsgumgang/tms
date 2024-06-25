@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
             clearSignature(target);
         });
     });
-});
 
     function saveSignature(padId) {
         const signaturePad = signaturePads[padId];
@@ -64,19 +63,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function loadSignature(padId) {
+        fetch(`/get-signature/${padId}`)
+        .then(response => response.ok ? response.blob() : Promise.reject('서명을 불러올 수 없습니다.'))
+        .then(blob => {
+            const img = new Image();
+            img.onload = () => displaySignature(padId, img.src);
+            img.src = URL.createObjectURL(blob);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
     function displaySignature(padId, imgData) {
         const canvas = document.getElementById(padId);
+        const signaturePad = signaturePads[padId];
         const ctx = canvas.getContext('2d');
+        
         const img = new Image();
         img.onload = () => {
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            signaturePad._isEmpty = false;
         };
         img.src = imgData;
     }
 
-
-function clearSignature(padId) {
-    const canvas = document.getElementById(padId);
-    const signaturePad = new SignaturePad(canvas);
-    signaturePad.clear();
-}
+    function clearSignature(padId) {
+        const signaturePad = signaturePads[padId];
+        signaturePad.clear();
+    }
+});
