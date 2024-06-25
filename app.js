@@ -83,61 +83,68 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
-
-        pdf.setFontSize(12);
-        pdf.text("수질자동측정기기 현장확인서", 105, 20, { align: 'center' });
-        pdf.text("[WTMS-QI-101-02(rev.0)]", 105, 30, { align: 'center' });
+        pdf.setFontSize(10);
 
         // 기본 정보
-        pdf.text(`사업장명: ${data['사업장명']}`, 20, 50);
-        pdf.text(`방류구번호: ${data['방류구번호']}`, 20, 60);
-        pdf.text(`시험일자: ${data['시험일자']}`, 20, 70);
+        pdf.text(data['사업장명'] || '', 35, 37);
+        pdf.text(data['방류구번호'] || '', 135, 37);
+        pdf.text(data['시험일자'] || '', 35, 43);
 
         // 측정기 모델
-        pdf.text("측정기 모델", 20, 90);
-        const fields = ['pH', 'TOC', 'SS', 'TN', 'TP', '유량계', '자동시료채취기'];
-        let yPosition = 100;
-        fields.forEach(field => {
-            pdf.text(`${field}:`, 20, yPosition);
-            pdf.text(`모델명: ${data[`${field}_모델명`]}`, 60, yPosition);
-            pdf.text(`제작사: ${data[`${field}_제작사`]}`, 110, yPosition);
-            pdf.text(`제작국: ${data[`${field}_제작국`]}`, 160, yPosition);
-            yPosition += 10;
-        });
+        pdf.text(data['pH_모델명'] || '', 22, 58);
+        pdf.text(data['pH_제작사'] || '', 68, 58);
+        pdf.text(data['pH_제작국'] || '', 108, 58);
+
+        pdf.text(data['TOC_모델명'] || '', 22, 66);
+        pdf.text(data['TOC_제작사'] || '', 68, 66);
+        pdf.text(data['TOC_제작국'] || '', 108, 66);
+
+        pdf.text(data['SS_모델명'] || '', 22, 74);
+        pdf.text(data['SS_제작사'] || '', 68, 74);
+        pdf.text(data['SS_제작국'] || '', 108, 74);
+
+        pdf.text(data['TN_모델명'] || '', 22, 82);
+        pdf.text(data['TN_제작사'] || '', 68, 82);
+        pdf.text(data['TN_제작국'] || '', 108, 82);
+
+        pdf.text(data['TP_모델명'] || '', 22, 90);
+        pdf.text(data['TP_제작사'] || '', 68, 90);
+        pdf.text(data['TP_제작국'] || '', 108, 90);
+
+        pdf.text(data['유량계_모델명'] || '', 22, 98);
+        pdf.text(data['유량계_제작사'] || '', 68, 98);
+        pdf.text(data['유량계_제작국'] || '', 108, 98);
+
+        pdf.text(data['자동시료채취기_모델명'] || '', 22, 106);
+        pdf.text(data['자동시료채취기_제작사'] || '', 68, 106);
+        pdf.text(data['자동시료채취기_제작국'] || '', 108, 106);
 
         // 전송기 모델
-        pdf.text("전송기 모델", 20, yPosition);
-        yPosition += 10;
-        const transmissionFields = ['DL', 'FEP'];
-        transmissionFields.forEach(field => {
-            pdf.text(`${field}:`, 20, yPosition);
-            pdf.text(`모델명: ${data[`${field}_모델명`]}`, 60, yPosition);
-            pdf.text(`버전: ${data[`${field}_버전`]}`, 110, yPosition);
-            yPosition += 10;
-        });
+        pdf.text(data['DL_모델명'] || '', 22, 122);
+        pdf.text(data['DL_버전'] || '', 68, 122);
+
+        pdf.text(data['FEP_모델명'] || '', 22, 130);
+        pdf.text(data['FEP_버전'] || '', 68, 130);
 
         // 시험 종류
-        pdf.text("시험 종류", 20, yPosition);
-        yPosition += 10;
         if (data['통합시험']) {
-            pdf.text("통합시험", 20, yPosition);
-            yPosition += 10;
+            pdf.text('통합시험', 22, 145);
         }
         if (data['확인검사']) {
-            pdf.text("확인검사", 20, yPosition);
-            yPosition += 10;
+            pdf.text('확인검사', 52, 145);
         }
         if (data['상대정확도시험']) {
-            pdf.text("상대정확도시험", 20, yPosition);
-            yPosition += 10;
+            pdf.text('상대정확도시험', 92, 145);
         }
-        pdf.text(`시험특이사항: ${data['시험특이사항']}`, 20, yPosition);
-        yPosition += 20;
+
+        pdf.text(data['시험특이사항'] || '', 22, 155);
 
         // 서명
         const signatures = ['sign-pad1', 'sign-pad2', 'sign-pad3'];
-        signatures.forEach(async (id, index) => {
-            const savedSignature = localStorage.getItem(id);
+        const yPositions = [187, 202, 217];
+
+        for (let i = 0; i < signatures.length; i++) {
+            const savedSignature = localStorage.getItem(signatures[i]);
             if (savedSignature) {
                 const img = new Image();
                 await new Promise((resolve) => {
@@ -145,15 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     img.src = savedSignature;
                 });
                 const imgProps = pdf.getImageProperties(img);
-                const pdfWidth = 50;
+                const pdfWidth = 40;
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                pdf.addImage(savedSignature, 'PNG', 20, yPosition, pdfWidth, pdfHeight);
-                yPosition += pdfHeight + 10;
+                pdf.addImage(savedSignature, 'PNG', 150, yPositions[i], pdfWidth, pdfHeight);
             }
-        });
+        }
 
-        // 추가 정보
-        pdf.text("※ 이외에 관제센터에서의 사후 확인과정에서 추가로 문제점이 발견될 수 있습니다.", 20, yPosition);
+        pdf.text(data['사업장명'] || '', 22, 187);
+        pdf.text(data['사업장명'] || '', 22, 202);
+        pdf.text(data['사업장명'] || '', 22, 217);
 
         pdf.save('현장확인서.pdf');
     });
