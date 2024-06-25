@@ -12,13 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.width = canvas.offsetWidth * ratio;
             canvas.height = canvas.offsetHeight * ratio;
             canvas.getContext("2d").scale(ratio, ratio);
-            signaturePad.clear();
+            loadSignature(canvas.id);
         }
 
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas();
-
-        loadSignature(canvas.id);
     });
 
     document.querySelectorAll('.signature-btn.save').forEach(button => {
@@ -55,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.text())
         .then(data => {
             alert('서명이 저장되었습니다.');
+            localStorage.setItem(padId, imgData);
             displaySignature(padId, imgData);
         })
         .catch(error => {
@@ -64,14 +63,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function loadSignature(padId) {
-        fetch(`/get-signature/${padId}`)
-        .then(response => response.ok ? response.blob() : Promise.reject('서명을 불러올 수 없습니다.'))
-        .then(blob => {
-            const img = new Image();
-            img.onload = () => displaySignature(padId, img.src);
-            img.src = URL.createObjectURL(blob);
-        })
-        .catch(error => console.error('Error:', error));
+        const savedSignature = localStorage.getItem(padId);
+        if (savedSignature) {
+            displaySignature(padId, savedSignature);
+        } else {
+            fetch(`/get-signature/${padId}`)
+            .then(response => response.ok ? response.blob() : Promise.reject('서명을 불러올 수 없습니다.'))
+            .then(blob => {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    const imgData = reader.result;
+                    localStorage.setItem(padId, imgData);
+                    displaySignature(padId, imgData);
+                }
+                reader.readAsDataURL(blob);
+            })
+            .catch(error => console.error('Error:', error));
+        }
     }
 
     function displaySignature(padId, imgData) {
@@ -81,7 +89,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const img = new Image();
         img.onload = () => {
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const ratio = Math.min(canvas.width / img.width, canvas.height / img.height);
+            const centerShift_x = (canvas.width - img.width * ratio) / 2;
+            const centerShift_y = (canvas.height - img.height * ratio) / 2;
+            
+            ctx.drawImage(img, 0, 0, img.width, img.height,
+                          centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
+            
             signaturePad._isEmpty = false;
         };
         img.src = imgData;
@@ -90,5 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function clearSignature(padId) {
         const signaturePad = signaturePads[padId];
         signaturePad.clear();
+        localStorage.removeItem(padId);
     }
 });
