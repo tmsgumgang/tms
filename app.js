@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('save-pdf').addEventListener('click', async () => {
         const form = document.getElementById('form');
         const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
 
         const A4_WIDTH = 210;
         const A4_HEIGHT = 297;
