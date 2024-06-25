@@ -83,6 +83,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
+
+        // 배경 이미지 추가
+        const templateImg = new Image();
+        templateImg.src = 'template.png';
+        await new Promise(resolve => {
+            templateImg.onload = resolve;
+        });
+        pdf.addImage(templateImg, 'PNG', 0, 0, 210, 297);
+
         pdf.setFontSize(10);
 
         // 기본 정보
