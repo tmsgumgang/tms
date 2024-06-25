@@ -8,12 +8,20 @@ document.addEventListener('DOMContentLoaded', () => {
         signaturePads[canvas.id] = signaturePad;
 
         function resizeCanvas() {
+            const dataUrl = signaturePad.toDataURL(); // 서명 데이터를 임시로 저장합니다.
             const ratio = Math.max(window.devicePixelRatio || 1, 1);
             canvas.width = canvas.offsetWidth * ratio;
             canvas.height = canvas.offsetHeight * ratio;
             canvas.getContext("2d").scale(ratio, ratio);
             signaturePad.clear(); // 캔버스 크기 변경 시 패드를 초기화합니다.
-            loadSignature(canvas.id);
+            if (dataUrl) {
+                const img = new Image();
+                img.src = dataUrl;
+                img.onload = () => {
+                    signaturePad.fromDataURL(dataUrl);
+                };
+            }
+            loadSignature(canvas.id); // 저장된 서명을 불러옵니다.
         }
 
         window.addEventListener("resize", resizeCanvas);
@@ -58,11 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const canvas = document.getElementById(padId);
         const signaturePad = signaturePads[padId];
         const ctx = canvas.getContext('2d');
-        
+
         const img = new Image();
         img.onload = () => {
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            signaturePad._isEmpty = false;
+            signaturePad.fromDataURL(imgData);
         };
         img.src = imgData;
     }
