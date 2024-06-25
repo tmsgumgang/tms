@@ -103,11 +103,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
             let position = 0;
+            let pageHeight = pdf.internal.pageSize.getHeight();
 
-            while (position < pdfHeight) {
-                pdf.addImage(imgData, 'PNG', 0, -position, pdfWidth, pdfHeight);
-                position += A4_HEIGHT;
-                if (position < pdfHeight) {
+            while (position < imgProps.height) {
+                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                position += pageHeight;
+                if (position < imgProps.height) {
                     pdf.addPage();
                 }
             }
