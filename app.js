@@ -78,93 +78,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('save-pdf').addEventListener('click', async () => {
         const form = document.getElementById('form');
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
 
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-
-        pdf.setFont('NotoSansKR');
-        pdf.setFontSize(12);
-
-        const margin = 10;
-        let yOffset = margin;
-
-        // 기본 정보
-        pdf.text("기본 정보", margin, yOffset);
-        yOffset += 10;
-        pdf.text(`사업장명: ${data['사업장명']}`, margin, yOffset);
-        yOffset += 10;
-        pdf.text(`방류구번호: ${data['방류구번호']}`, margin, yOffset);
-        yOffset += 10;
-        pdf.text(`시험일자: ${data['시험일자']}`, margin, yOffset);
-        yOffset += 20;
-
-        // 측정기 모델
-        pdf.text("측정기 모델", margin, yOffset);
-        yOffset += 10;
-        const fields = ['pH', 'TOC', 'SS', 'TN', 'TP', '유량계', '자동시료채취기'];
-        fields.forEach(field => {
-            pdf.text(`${field} 모델명: ${data[`${field}_모델명`]}`, margin, yOffset);
-            yOffset += 10;
-            pdf.text(`${field} 제작사: ${data[`${field}_제작사`]}`, margin, yOffset);
-            yOffset += 10;
-            pdf.text(`${field} 제작국: ${data[`${field}_제작국`]}`, margin, yOffset);
-            yOffset += 20;
-        });
-
-        // 전송기 모델
-        pdf.text("전송기 모델", margin, yOffset);
-        yOffset += 10;
-        const transmissionFields = ['DL', 'FEP'];
-        transmissionFields.forEach(field => {
-            pdf.text(`${field} 모델명: ${data[`${field}_모델명`]}`, margin, yOffset);
-            yOffset += 10;
-            pdf.text(`${field} 버전: ${data[`${field}_버전`]}`, margin, yOffset);
-            yOffset += 20;
-        });
-
-        // 시험 종류
-        pdf.text("시험 종류", margin, yOffset);
-        yOffset += 10;
-        if (data['통합시험']) {
-            pdf.text("통합시험", margin, yOffset);
-            yOffset += 10;
-        }
-        if (data['확인검사']) {
-            pdf.text("확인검사", margin, yOffset);
-            yOffset += 10;
-        }
-        if (data['상대정확도시험']) {
-            pdf.text("상대정확도시험", margin, yOffset);
-            yOffset += 10;
-        }
-        pdf.text(`시험특이사항: ${data['시험특이사항']}`, margin, yOffset);
-        yOffset += 20;
-
-        // 서명
+        // PDF에 추가할 서명 이미지를 저장합니다.
         const signatures = ['sign-pad1', 'sign-pad2', 'sign-pad3'];
         for (const id of signatures) {
-            const savedSignature = localStorage.getItem(id);
-            if (savedSignature) {
-                const img = new Image();
-                await new Promise((resolve) => {
-                    img.onload = resolve;
-                    img.src = savedSignature;
-                });
-                const imgProps = pdf.getImageProperties(img);
-                const pdfWidth = 50;
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                pdf.addImage(savedSignature, 'PNG', margin, yOffset, pdfWidth, pdfHeight);
-                yOffset += pdfHeight + 10;
-            }
+            const canvas = document.getElementById(id);
+            const imgData = canvas.toDataURL('image/png');
+            const imgElement = new Image();
+            imgElement.src = imgData;
+            await new Promise(resolve => imgElement.onload = resolve);
+            canvas.dataset.signature = imgData;
         }
 
-        // 추가 정보
-        pdf.text("추가 정보", margin, yOffset);
-        yOffset += 10;
-        pdf.text("※ 이외에 관제센터에서의 사후 확인과정에서 추가로 문제점이 발견될 수 있습니다.", margin, yOffset);
+        // html2canvas를 사용하여 PDF로 변환할 HTML 요소를 캡처합니다.
+        const A4_WIDTH = 210;
+        const A4_HEIGHT = 297;
+        const margin = 10; // 여백 설정
+        const pdfWidth = A4_WIDTH - 2 * margin;
+        const pdfHeight = A4_HEIGHT - 2 * margin;
 
-        pdf.save('현장확인서.pdf');
+        html2canvas(form, { scale: 2 }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgProps = pdf.getImageProperties(imgData);
+            const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            while (heightLeft > 0) {
+                pdf.addImage(imgData, 'PNG', margin, margin - position, pdfWidth, imgHeight);
+                heightLeft -= pdfHeight;
+                if (heightLeft > 0) {
+                    pdf.addPage();
+                }
+                position += pdfHeight;
+            }
+
+            pdf.save('현장확인서.pdf');
+        });
     });
 });
