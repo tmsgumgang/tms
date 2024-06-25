@@ -78,45 +78,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('save-pdf').addEventListener('click', async () => {
         const form = document.getElementById('form');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
 
-        // PDF에 추가할 서명 이미지를 저장합니다.
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+
+        pdf.setFontSize(12);
+
+        // Add form data
+        pdf.text(`사업장명: ${data['사업장명']}`, 20, 30);
+        pdf.text(`방류구번호: ${data['방류구번호']}`, 20, 40);
+        pdf.text(`시험일자: ${data['시험일자']}`, 20, 50);
+
+        // More data to be added...
+
+        // Add signatures
         const signatures = ['sign-pad1', 'sign-pad2', 'sign-pad3'];
         for (const id of signatures) {
-            const canvas = document.getElementById(id);
-            const imgData = canvas.toDataURL('image/png');
-            const imgElement = new Image();
-            imgElement.src = imgData;
-            await new Promise(resolve => imgElement.onload = resolve);
-            canvas.dataset.signature = imgData;
+            const savedSignature = localStorage.getItem(id);
+            if (savedSignature) {
+                const img = new Image();
+                await new Promise((resolve) => {
+                    img.onload = resolve;
+                    img.src = savedSignature;
+                });
+                const imgProps = pdf.getImageProperties(img);
+                const pdfWidth = 50;
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                pdf.addImage(savedSignature, 'PNG', 20, pdf.autoTable.previous.finalY + 10, pdfWidth, pdfHeight);
+            }
         }
 
-        // html2canvas를 사용하여 PDF로 변환할 HTML 요소를 캡처합니다.
-        const A4_WIDTH = 210;
-        const A4_HEIGHT = 297;
-        const margin = 10; // 여백 설정
-        const pdfWidth = A4_WIDTH - 2 * margin;
-        const pdfHeight = A4_HEIGHT - 2 * margin;
-
-        html2canvas(form, { scale: 2 }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const imgProps = pdf.getImageProperties(imgData);
-            const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-            let heightLeft = imgHeight;
-            let position = 0;
-
-            while (heightLeft > 0) {
-                pdf.addImage(imgData, 'PNG', margin, margin - position, pdfWidth, imgHeight);
-                heightLeft -= pdfHeight;
-                if (heightLeft > 0) {
-                    pdf.addPage();
-                }
-                position += pdfHeight;
-            }
-
-            pdf.save('현장확인서.pdf');
-        });
+        pdf.save('현장확인서.pdf');
     });
 });
