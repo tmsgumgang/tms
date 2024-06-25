@@ -1,51 +1,75 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const fs = require('fs');
-const path = require('path');
+document.addEventListener('DOMContentLoaded', () => {
+    const signaturePads = {};
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+    document.querySelectorAll(".signature-pad").forEach(canvas => {
+        const signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgb(255, 255, 255)'
+        });
+        signaturePads[canvas.id] = signaturePad;
 
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
+        function resizeCanvas() {
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            canvas.getContext("2d").scale(ratio, ratio);
+            signaturePad.clear(); // 캔버스 크기 변경 시 패드를 초기화합니다.
+            loadSignature(canvas.id);
+        }
 
-const signaturesDir = path.join(__dirname, 'signatures');
-if (!fs.existsSync(signaturesDir)) {
-    fs.mkdirSync(signaturesDir, { recursive: true });
-}
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+    });
 
-app.post('/save-signature', (req, res) => {
-    console.log('Received save request:', req.body); // 요청 내용 로깅
-    const { padId, signatureData } = req.body;
-    if (!padId || !signatureData) {
-        console.log('Missing data in request'); // 누락된 데이터 로깅
-        return res.status(400).send('Missing padId or signatureData');
+    document.querySelectorAll('.signature-btn.save').forEach(button => {
+        button.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            saveSignature(target);
+        });
+    });
+
+    document.querySelectorAll('.signature-btn.clear').forEach(button => {
+        button.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            clearSignature(target);
+        });
+    });
+
+    function saveSignature(padId) {
+        const signaturePad = signaturePads[padId];
+
+        if (signaturePad.isEmpty()) {
+            alert("서명이 없습니다.");
+            return;
+        }
+
+        const imgData = signaturePad.toDataURL("image/png");
+        localStorage.setItem(padId, imgData);
+        alert('서명이 저장되었습니다.');
     }
 
-    const filePath = path.join(signaturesDir, `${padId}.json`);
-    fs.writeFile(filePath, JSON.stringify(signatureData), (err) => {
-        if (err) {
-            console.error(`Error saving signature: ${err}`);
-            return res.status(500).send('Failed to save the signature');
+    function loadSignature(padId) {
+        const savedSignature = localStorage.getItem(padId);
+        if (savedSignature) {
+            displaySignature(padId, savedSignature);
         }
-        console.log('Signature saved successfully'); // 성공 로깅
-        res.send('Signature saved successfully');
-    });
-});
+    }
 
-app.get('/get-signature/:padId', (req, res) => {
-    const padId = req.params.padId;
-    const filePath = path.join(signaturesDir, `${padId}.json`);
+    function displaySignature(padId, imgData) {
+        const canvas = document.getElementById(padId);
+        const signaturePad = signaturePads[padId];
+        const ctx = canvas.getContext('2d');
+        
+        const img = new Image();
+        img.onload = () => {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            signaturePad._isEmpty = false;
+        };
+        img.src = imgData;
+    }
 
-    fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) {
-            console.error(`Error reading signature: ${err}`);
-            return res.status(404).send('Signature not found');
-        }
-        res.json(JSON.parse(data));
-    });
-});
-
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    function clearSignature(padId) {
+        const signaturePad = signaturePads[padId];
+        signaturePad.clear();
+        localStorage.removeItem(padId);
+    }
 });
