@@ -84,6 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
+        // NotoSans 폰트를 기본으로 설정합니다.
+        doc.setFont('Noto Sans KR');
+
         let yOffset = 10;
         doc.setFontSize(12);
         
