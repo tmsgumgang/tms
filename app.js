@@ -86,62 +86,66 @@ document.addEventListener('DOMContentLoaded', () => {
         pdf.setFontSize(10);
 
         // 기본 정보
-        pdf.text(data['사업장명'], 35, 37);
-        pdf.text(data['방류구번호'], 135, 37);
-        pdf.text(data['시험일자'], 35, 43);
+        pdf.text(data['사업장명'], 40, 30);
+        pdf.text(data['방류구번호'], 140, 30);
+        pdf.text(data['시험일자'], 40, 40);
 
         // 측정기 모델
-        pdf.text(data['pH_모델명'], 22, 58);
-        pdf.text(data['pH_제작사'], 68, 58);
-        pdf.text(data['pH_제작국'], 108, 58);
+        pdf.text(data['pH_모델명'], 20, 55);
+        pdf.text(data['pH_제작사'], 70, 55);
+        pdf.text(data['pH_제작국'], 120, 55);
 
-        pdf.text(data['TOC_모델명'], 22, 66);
-        pdf.text(data['TOC_제작사'], 68, 66);
-        pdf.text(data['TOC_제작국'], 108, 66);
+        pdf.text(data['TOC_모델명'], 20, 65);
+        pdf.text(data['TOC_제작사'], 70, 65);
+        pdf.text(data['TOC_제작국'], 120, 65);
 
-        pdf.text(data['SS_모델명'], 22, 74);
-        pdf.text(data['SS_제작사'], 68, 74);
-        pdf.text(data['SS_제작국'], 108, 74);
+        pdf.text(data['SS_모델명'], 20, 75);
+        pdf.text(data['SS_제작사'], 70, 75);
+        pdf.text(data['SS_제작국'], 120, 75);
 
-        pdf.text(data['TN_모델명'], 22, 82);
-        pdf.text(data['TN_제작사'], 68, 82);
-        pdf.text(data['TN_제작국'], 108, 82);
+        pdf.text(data['TN_모델명'], 20, 85);
+        pdf.text(data['TN_제작사'], 70, 85);
+        pdf.text(data['TN_제작국'], 120, 85);
 
-        pdf.text(data['TP_모델명'], 22, 90);
-        pdf.text(data['TP_제작사'], 68, 90);
-        pdf.text(data['TP_제작국'], 108, 90);
+        pdf.text(data['TP_모델명'], 20, 95);
+        pdf.text(data['TP_제작사'], 70, 95);
+        pdf.text(data['TP_제작국'], 120, 95);
 
-        pdf.text(data['유량계_모델명'], 22, 98);
-        pdf.text(data['유량계_제작사'], 68, 98);
-        pdf.text(data['유량계_제작국'], 108, 98);
+        pdf.text(data['유량계_모델명'], 20, 105);
+        pdf.text(data['유량계_제작사'], 70, 105);
+        pdf.text(data['유량계_제작국'], 120, 105);
 
-        pdf.text(data['자동시료채취기_모델명'], 22, 106);
-        pdf.text(data['자동시료채취기_제작사'], 68, 106);
-        pdf.text(data['자동시료채취기_제작국'], 108, 106);
+        pdf.text(data['자동시료채취기_모델명'], 20, 115);
+        pdf.text(data['자동시료채취기_제작사'], 70, 115);
+        pdf.text(data['자동시료채취기_제작국'], 120, 115);
 
         // 전송기 모델
-        pdf.text(data['DL_모델명'], 22, 122);
-        pdf.text(data['DL_버전'], 68, 122);
+        pdf.text(data['DL_모델명'], 20, 125);
+        pdf.text(data['DL_버전'], 70, 125);
 
-        pdf.text(data['FEP_모델명'], 22, 130);
-        pdf.text(data['FEP_버전'], 68, 130);
+        pdf.text(data['FEP_모델명'], 20, 135);
+        pdf.text(data['FEP_버전'], 70, 135);
 
         // 시험 종류
+        let yPos = 145;
         if (data['통합시험']) {
-            pdf.text('통합시험', 22, 145);
+            pdf.text('통합시험', 20, yPos);
+            yPos += 10;
         }
         if (data['확인검사']) {
-            pdf.text('확인검사', 52, 145);
+            pdf.text('확인검사', 20, yPos);
+            yPos += 10;
         }
         if (data['상대정확도시험']) {
-            pdf.text('상대정확도시험', 92, 145);
+            pdf.text('상대정확도시험', 20, yPos);
+            yPos += 10;
         }
 
-        pdf.text(data['시험특이사항'], 22, 155);
+        pdf.text(data['시험특이사항'], 20, yPos + 10);
 
         // 서명
         const signatures = ['sign-pad1', 'sign-pad2', 'sign-pad3'];
-        const yPositions = [187, 202, 217];
+        const yPositions = [180, 190, 200];
 
         for (let i = 0; i < signatures.length; i++) {
             const savedSignature = localStorage.getItem(signatures[i]);
@@ -152,15 +156,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     img.src = savedSignature;
                 });
                 const imgProps = pdf.getImageProperties(img);
-                const pdfWidth = 50;
+                const pdfWidth = 40;
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
                 pdf.addImage(savedSignature, 'PNG', 150, yPositions[i], pdfWidth, pdfHeight);
             }
         }
-
-        pdf.text(data['사업장명'], 22, 187);
-        pdf.text(data['사업장명'], 22, 202);
-        pdf.text(data['사업장명'], 22, 217);
 
         pdf.save('현장확인서.pdf');
     });
