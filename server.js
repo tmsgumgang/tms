@@ -15,8 +15,10 @@ if (!fs.existsSync(signaturesDir)) {
 }
 
 app.post('/save-signature', (req, res) => {
+    console.log('Received save request:', req.body); // 요청 내용 로깅
     const { padId, signatureData } = req.body;
     if (!padId || !signatureData) {
+        console.log('Missing data in request'); // 누락된 데이터 로깅
         return res.status(400).send('Missing padId or signatureData');
     }
 
@@ -26,6 +28,7 @@ app.post('/save-signature', (req, res) => {
             console.error(`Error saving signature: ${err}`);
             return res.status(500).send('Failed to save the signature');
         }
+        console.log('Signature saved successfully'); // 성공 로깅
         res.send('Signature saved successfully');
     });
 });
