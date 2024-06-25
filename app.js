@@ -107,13 +107,13 @@ document.addEventListener('DOMContentLoaded', () => {
             let heightLeft = imgHeight;
             let position = 0;
 
+            pdf.addImage(imgData, 'PNG', margin, margin - position, pdfWidth, imgHeight);
+            heightLeft -= pdfHeight;
             while (heightLeft > 0) {
+                position = imgHeight - heightLeft;
+                pdf.addPage();
                 pdf.addImage(imgData, 'PNG', margin, margin - position, pdfWidth, imgHeight);
                 heightLeft -= pdfHeight;
-                if (heightLeft > 0) {
-                    pdf.addPage();
-                }
-                position += pdfHeight;
             }
 
             pdf.save('현장확인서.pdf');
