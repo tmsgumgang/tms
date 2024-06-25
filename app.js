@@ -76,11 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem(padId);
     }
 
-    document.getElementById('save-pdf').addEventListener('click', () => {
+    document.getElementById('save-pdf').addEventListener('click', async () => {
         const form = document.getElementById('form');
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        
+
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
@@ -141,16 +141,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 서명
         const signatures = ['sign-pad1', 'sign-pad2', 'sign-pad3'];
-        signatures.forEach((id, index) => {
+        for (const id of signatures) {
             const savedSignature = localStorage.getItem(id);
             if (savedSignature) {
-                const imgProps = doc.getImageProperties(savedSignature);
+                const img = new Image();
+                await new Promise((resolve) => {
+                    img.onload = resolve;
+                    img.src = savedSignature;
+                });
+                const imgProps = doc.getImageProperties(img);
                 const pdfWidth = 50;
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
                 doc.addImage(savedSignature, 'PNG', 10, yOffset, pdfWidth, pdfHeight);
                 yOffset += pdfHeight + 10;
             }
-        });
+        }
 
         // 추가 정보
         doc.text("추가 정보", 10, yOffset);
