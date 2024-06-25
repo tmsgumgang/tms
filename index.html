@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>할 일 목록 앱</title>
+    <title>수질자동측정기기 문서 시스템</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 </head>
 <body>
     <nav>
@@ -16,10 +20,14 @@
         </ul>
     </nav>
     <div id="app">
-        <h1>할 일 목록</h1>
-        <input type="text" id="new-task" placeholder="새 할 일 입력">
-        <button id="add-task-button">추가</button>
-        <ul id="task-list"></ul>
+        <h1>수질자동측정기기 문서 시스템</h1>
+        <p>원하는 문서를 선택하세요:</p>
+        <ul>
+            <li><a href="현장확인서.html">현장확인서</a></li>
+            <li><a href="상대정확도시험.html">상대정확도시험 확인서</a></li>
+            <li><a href="통합시험.html">통합시험 조사표</a></li>
+            <li><a href="확인검사.html">확인검사 조사표</a></li>
+        </ul>
     </div>
     <script src="app.js"></script>
 </body>
