@@ -81,55 +81,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
 
+        // html2canvas를 사용하여 HTML 요소를 캡처하고 이미지로 변환
+        const canvas = await html2canvas(document.querySelector('.container'));
+        const imgData = canvas.toDataURL('image/png');
+
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
-        pdf.setFontSize(10);
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = 210;
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-        // 기본 정보
-        pdf.text(`사업장명: ${data['사업장명']}`, 20, 30);
-        pdf.text(`방류구번호: ${data['방류구번호']}`, 20, 40);
-        pdf.text(`시험일자: ${data['시험일자']}`, 20, 50);
+        // 이미지가 한 페이지에 맞도록 PDF에 추가
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
 
-        // 측정기 모델
-        const fields = ['pH', 'TOC', 'SS', 'TN', 'TP', '유량계', '자동시료채취기'];
-        let yPosition = 60;
-        fields.forEach(field => {
-            pdf.text(`${field}: 모델명 - ${data[`${field}_모델명`]}, 제작사 - ${data[`${field}_제작사`]}, 제작국 - ${data[`${field}_제작국`]}`, 20, yPosition);
-            yPosition += 10;
-        });
-
-        // 전송기 모델
-        pdf.text(`D/L 모델명: ${data['DL_모델명']}`, 20, yPosition);
-        yPosition += 10;
-        pdf.text(`D/L 버전: ${data['DL_버전']}`, 20, yPosition);
-        yPosition += 10;
-        pdf.text(`FEP 모델명: ${data['FEP_모델명']}`, 20, yPosition);
-        yPosition += 10;
-        pdf.text(`FEP 버전: ${data['FEP_버전']}`, 20, yPosition);
-        yPosition += 20;
-
-        // 시험 종류
-        pdf.text("시험 종류:", 20, yPosition);
-        yPosition += 10;
-        if (data['통합시험']) {
-            pdf.text("통합시험", 20, yPosition);
-            yPosition += 10;
-        }
-        if (data['확인검사']) {
-            pdf.text("확인검사", 20, yPosition);
-            yPosition += 10;
-        }
-        if (data['상대정확도시험']) {
-            pdf.text("상대정확도시험", 20, yPosition);
-            yPosition += 10;
-        }
-        pdf.text(`시험특이사항: ${data['시험특이사항']}`, 20, yPosition);
-        yPosition += 20;
-
-        // 서명
+        // 저장된 서명을 PDF에 추가
         const signatures = ['sign-pad1', 'sign-pad2', 'sign-pad3'];
-        const signatureLabels = ['사업장', '유지관리 업체', '관제센터'];
-
         for (let i = 0; i < signatures.length; i++) {
             const savedSignature = localStorage.getItem(signatures[i]);
             if (savedSignature) {
@@ -141,11 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const imgProps = pdf.getImageProperties(img);
                 const pdfWidth = 50;
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                pdf.addImage(savedSignature, 'PNG', 20, yPosition, pdfWidth, pdfHeight);
-                yPosition += pdfHeight + 10;
+                pdf.addImage(savedSignature, 'PNG', 150, 187 + i * 15, pdfWidth, pdfHeight);
             }
-            pdf.text(signatureLabels[i], 20, yPosition);
-            yPosition += 10;
         }
 
         pdf.save('현장확인서.pdf');
