@@ -12,11 +12,19 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.width = canvas.offsetWidth * ratio;
             canvas.height = canvas.offsetHeight * ratio;
             canvas.getContext("2d").scale(ratio, ratio);
-            loadSignature(canvas.id);
+            
+            // 캔버스 크기 변경 후 서명 다시 로드
+            const savedSignature = localStorage.getItem(canvas.id);
+            if (savedSignature) {
+                displaySignature(canvas.id, savedSignature);
+            } else {
+                signaturePad.clear(); // 저장된 서명이 없으면 캔버스를 지웁니다.
+            }
         }
 
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas();
+        loadSignature(canvas.id);
     });
 
     document.querySelectorAll('.signature-btn.save').forEach(button => {
@@ -91,12 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
         img.onload = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            const ratio = Math.min(canvas.width / img.width, canvas.height / img.height);
-            const centerShift_x = (canvas.width - img.width * ratio) / 2;
-            const centerShift_y = (canvas.height - img.height * ratio) / 2;
-            
-            ctx.drawImage(img, 0, 0, img.width, img.height,
-                          centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
+            // 캔버스의 크기에 맞게 이미지를 그립니다.
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             
             signaturePad._isEmpty = false;
         };
