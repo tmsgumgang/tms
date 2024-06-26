@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const { PDFDocument } = PDFLib;
     const signaturePads = {};
 
     document.querySelectorAll(".signature-pad").forEach(canvas => {
@@ -12,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.width = canvas.offsetWidth * ratio;
             canvas.height = canvas.offsetHeight * ratio;
             canvas.getContext("2d").scale(ratio, ratio);
-            signaturePad.clear(); // 캔버스 크기 변경 시 패드를 초기화합니다.
+            signaturePad.clear();
             loadSignature(canvas.id);
         }
 
@@ -73,43 +74,67 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem(padId);
     }
 
-    const submitButton = document.getElementById('save-pdf');
+    document.getElementById('save-pdf').addEventListener('click', async () => {
+        const form = document.getElementById('form');
+        const formData = new FormData(form);
 
-    submitButton.addEventListener('click', async function() {
-        const { PDFDocument } = PDFLib;
-
-        // 여기에 템플릿 PDF의 경로를 넣으세요.
-        const existingPdfBytes = await fetch('https://raw.githubusercontent.com/tmsgumgang/tms/main/3.%EC%88%98%EC%A7%88%EC%9E%90%EB%8F%99%EC%B8%A1%EC%A0%95%EA%B8%B0%EA%B8%B0%20%ED%98%84%EC%9E%A5%ED%99%95%EC%9D%B8%EC%84%9C%20%EC%96%91%EC%8B%9D.pdf').then(res => res.arrayBuffer());
+        const existingPdfBytes = await fetch('https://사용자명.github.io/리포지토리명/3.수질자동측정기기 현장확인서 양식.pdf').then(res => res.arrayBuffer());
 
         const pdfDoc = await PDFDocument.load(existingPdfBytes);
         const pages = pdfDoc.getPages();
         const firstPage = pages[0];
 
-        const form = document.getElementById('form');
-        const formElements = form.elements;
+        const formFields = {
+            '사업장명': formData.get('사업장명'),
+            '방류구번호': formData.get('방류구번호'),
+            '시험일자': formData.get('시험일자'),
+            'pH_모델명': formData.get('pH_모델명'),
+            'pH_제작사': formData.get('pH_제작사'),
+            'pH_제작국': formData.get('pH_제작국'),
+            'TOC_모델명': formData.get('TOC_모델명'),
+            'TOC_제작사': formData.get('TOC_제작사'),
+            'TOC_제작국': formData.get('TOC_제작국'),
+            'SS_모델명': formData.get('SS_모델명'),
+            'SS_제작사': formData.get('SS_제작사'),
+            'SS_제작국': formData.get('SS_제작국'),
+            'TN_모델명': formData.get('TN_모델명'),
+            'TN_제작사': formData.get('TN_제작사'),
+            'TN_제작국': formData.get('TN_제작국'),
+            'TP_모델명': formData.get('TP_모델명'),
+            'TP_제작사': formData.get('TP_제작사'),
+            'TP_제작국': formData.get('TP_제작국'),
+            '유량계_모델명': formData.get('유량계_모델명'),
+            '유량계_제작사': formData.get('유량계_제작사'),
+            '유량계_제작국': formData.get('유량계_제작국'),
+            '자동시료채취기_모델명': formData.get('자동시료채취기_모델명'),
+            '자동시료채취기_제작사': formData.get('자동시료채취기_제작사'),
+            '자동시료채취기_제작국': formData.get('자동시료채취기_제작국'),
+            'DL_모델명': formData.get('DL_모델명'),
+            'DL_버전': formData.get('DL_버전'),
+            'FEP_모델명': formData.get('FEP_모델명'),
+            'FEP_버전': formData.get('FEP_버전'),
+            '시험특이사항': formData.get('시험특이사항')
+        };
 
-        firstPage.drawText(formElements['사업장명'].value, { x: 100, y: 700, size: 12 });
-        firstPage.drawText(formElements['방류구번호'].value, { x: 300, y: 700, size: 12 });
-        firstPage.drawText(formElements['시험일자'].value, { x: 100, y: 680, size: 12 });
-
-        // 여기에 다른 폼 요소에 대한 코드를 추가합니다.
-        firstPage.drawText(formElements['pH_모델명'].value, { x: 100, y: 660, size: 12 });
-        firstPage.drawText(formElements['pH_제작사'].value, { x: 200, y: 660, size: 12 });
-        firstPage.drawText(formElements['pH_제작국'].value, { x: 300, y: 660, size: 12 });
-
-        // 서명 추가
-        const signPad1Data = localStorage.getItem('sign-pad1');
-        if (signPad1Data) {
-            const signPad1Image = await pdfDoc.embedPng(signPad1Data);
-            firstPage.drawImage(signPad1Image, { x: 100, y: 100, width: 100, height: 50 });
+        for (const key in formFields) {
+            if (formFields.hasOwnProperty(key)) {
+                firstPage.drawText(formFields[key], {
+                    x: 100, // 해당 필드의 x 위치
+                    y: 100, // 해당 필드의 y 위치
+                    size: 12,
+                });
+            }
         }
 
         const pdfBytes = await pdfDoc.save();
-
         const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = '현장확인서.pdf';
-        link.click();
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '수질자동측정기기_현장확인서.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     });
 });
