@@ -77,6 +77,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('save-pdf').addEventListener('click', async () => {
+        const button = document.getElementById('save-pdf');
+        button.disabled = true; // Disable the button to prevent multiple clicks
+        button.textContent = '처리 중...'; // Change the button text to indicate processing
+
         console.log("제출 버튼 클릭됨");
         const form = document.getElementById('form');
         const formData = new FormData(form);
@@ -165,6 +169,10 @@ document.addEventListener('DOMContentLoaded', () => {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+
+        // Re-enable the button and reset text
+        button.disabled = false;
+        button.textContent = '제출';
         console.log("PDF 저장 완료");
     });
 });
