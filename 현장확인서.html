@@ -4,60 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>현장확인서</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap">
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-    <style>
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-        }
-        table, th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            text-align: center;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .container {
-            width: 100%;
-            max-width: 210mm;
-            margin: 0 auto;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .signature-pad {
-            border: 1px solid #000;
-            width: 100%;
-            max-width: 200px;
-            height: 100px;
-        }
-        .section {
-            margin-bottom: 20px;
-        }
-        #save-pdf {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background-color: #007bff;
-            color: white;
-            font-size: 18px;
-            border: none;
-            border-radius: 5px;
-            text-align: center;
-            margin-top: 20px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        #save-pdf:active {
-            background-color: #0056b3;
-        }
-        .red-text {
-            color: red;
-        }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -65,6 +15,7 @@
         <h2>[WTMS-QI-101-02(rev.0)]</h2>
         <form id="form">
             <div class="section">
+                <h3>기본 정보</h3>
                 <table>
                     <tr>
                         <th>사업장명</th>
@@ -79,6 +30,7 @@
                 </table>
             </div>
             <div class="section">
+                <h3>측정기 모델</h3>
                 <table>
                     <tr>
                         <th>항목</th>
@@ -131,6 +83,7 @@
                 </table>
             </div>
             <div class="section">
+                <h3>전송기 모델</h3>
                 <table>
                     <tr>
                         <th>항목</th>
