@@ -4,7 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>수질자동측정기기 현장확인서</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 필요한 스타일 추가 */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #000;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #000;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .signature-pad {
+            border: 1px solid #000;
+            width: 100%;
+            height: 150px;
+        }
+        .signature-btn {
+            display: inline-block;
+            margin: 10px 0;
+        }
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.3.2/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
@@ -157,6 +187,98 @@
             <button type="button" id="save-pdf">제출</button>
         </form>
     </div>
-    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const signaturePads = {};
+
+            document.querySelectorAll(".signature-pad").forEach(canvas => {
+                const signaturePad = new SignaturePad(canvas, {
+                    backgroundColor: 'rgb(255, 255, 255)'
+                });
+                signaturePads[canvas.id] = signaturePad;
+
+                function resizeCanvas() {
+                    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                    canvas.width = canvas.offsetWidth * ratio;
+                    canvas.height = canvas.offsetHeight * ratio;
+                    canvas.getContext("2d").scale(ratio, ratio);
+                    signaturePad.clear();
+                    loadSignature(canvas.id);
+                }
+
+                window.addEventListener("resize", resizeCanvas);
+                resizeCanvas();
+            });
+
+            document.querySelectorAll('.signature-btn.save').forEach(button => {
+                button.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    saveSignature(target);
+                });
+            });
+
+            document.querySelectorAll('.signature-btn.clear').forEach(button => {
+                button.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    clearSignature(target);
+                });
+            });
+
+            function saveSignature(padId) {
+                const signaturePad = signaturePads[padId];
+
+                if (signaturePad.isEmpty()) {
+                    alert("서명이 없습니다.");
+                    return;
+                }
+
+                const imgData = signaturePad.toDataURL("image/png");
+                localStorage.setItem(padId, imgData);
+                alert('서명이 저장되었습니다.');
+            }
+
+            function loadSignature(padId) {
+                const savedSignature = localStorage.getItem(padId);
+                if (savedSignature) {
+                    displaySignature(padId, savedSignature);
+                }
+            }
+
+            function displaySignature(padId, imgData) {
+                const canvas = document.getElementById(padId);
+                const signaturePad = signaturePads[padId];
+                const ctx = canvas.getContext('2d');
+                
+                const img = new Image();
+                img.onload = () => {
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    signaturePad._isEmpty = false;
+                };
+                img.src = imgData;
+            }
+
+            function clearSignature(padId) {
+                const signaturePad = signaturePads[padId];
+                signaturePad.clear();
+                localStorage.removeItem(padId);
+            }
+
+            document.getElementById('save-pdf').addEventListener('click', async function() {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+                
+                const formElement = document.getElementById('form');
+                const canvasElement = await html2canvas(formElement);
+                const imgData = canvasElement.toDataURL('image/png');
+                
+                const imgProps = doc.getImageProperties(imgData);
+                const pdfWidth = doc.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                
+                doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                doc.save('현장확인서.pdf');
+            });
+        });
+    </script>
 </body>
 </html>
