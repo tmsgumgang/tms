@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('save-pdf').addEventListener('click', async () => {
+        console.log("제출 버튼 클릭됨");
         const form = document.getElementById('form');
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
@@ -94,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pdf.addImage(img, 'PNG', 0, 0, 210, 297); // Adjust width and height as necessary
 
         // 기본 정보
+        console.log("기본 정보 삽입 중...");
         pdf.text(data['사업장명'], 40, 37);
         pdf.text(data['방류구번호'], 140, 37);
         pdf.text(data['시험일자'], 40, 43);
@@ -153,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        console.log("PDF 저장 중...");
         const blob = pdf.output('blob');
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -162,5 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        console.log("PDF 저장 완료");
     });
 });
