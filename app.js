@@ -81,18 +81,15 @@ document.addEventListener('DOMContentLoaded', () => {
         button.disabled = true; // Disable the button to prevent multiple clicks
         button.textContent = '처리 중...'; // Change the button text to indicate processing
 
-        console.log("제출 버튼 클릭됨");
         const form = document.getElementById('form');
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        console.log("입력 데이터:", data);
 
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
         pdf.setFontSize(10);
 
         // 기본 정보
-        console.log("기본 정보 삽입 중...");
         pdf.text(data['사업장명'] || '', 40, 37);
         pdf.text(data['방류구번호'] || '', 140, 37);
         pdf.text(data['시험일자'] || '', 40, 43);
@@ -145,7 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     img.onload = resolve;
                     img.src = savedSignature;
                 });
-                console.log(`서명 이미지 로드 완료: ${signatures[i]}`);
                 const imgProps = pdf.getImageProperties(img);
                 const pdfWidth = 50;
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
@@ -153,7 +149,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        console.log("PDF 저장 중...");
         const blob = pdf.output('blob');
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -164,9 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        // Re-enable the button and reset text
         button.disabled = false;
         button.textContent = '제출';
-        console.log("PDF 저장 완료");
     });
 });
