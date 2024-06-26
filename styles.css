@@ -1,27 +1,20 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: white;
-    color: #333;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100vh;
+    font-family: 'Noto Sans KR', sans-serif;
     margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
 }
 
 .container {
-    width: 100%;
     max-width: 800px;
-    margin: auto;
+    margin: 0 auto;
+    background-color: #fff;
     padding: 20px;
-    box-sizing: border-box;
-    background: white;
-    border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-h1, h2 {
-    text-align: center;
+h1, h2, h3 {
+    color: #333;
 }
 
 table {
@@ -30,40 +23,42 @@ table {
     margin-bottom: 20px;
 }
 
-table, th, td {
-    border: 1px solid black;
-}
-
 th, td {
+    border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
 }
 
-.section {
-    margin-bottom: 20px;
-}
-
-.signature-pad {
-    border: 1px solid black;
-    width: 100%;
-    height: 150px; /* 서명란 높이 확대 */
-    position: relative;
+th {
+    background-color: #f2f2f2;
 }
 
 .wide-input {
-    width: calc(100% - 16px);
-    padding: 8px;
-    margin: 8px 0;
+    width: 100%;
+    height: 100px;
+    resize: none;
+}
+
+.signature-pad {
+    border: 1px solid #ddd;
+    width: 100%;
+    height: 150px;
 }
 
 .signature-btn {
+    margin-top: 5px;
+}
+
+.submit-btn {
     background-color: #4CAF50;
     color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
+    padding: 15px 20px;
+    border: none;
     cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+}
+
+.submit-btn:hover {
+    background-color: #45a049;
 }
