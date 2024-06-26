@@ -85,14 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const pdf = new jsPDF('p', 'mm', 'a4');
         pdf.setFontSize(10);
 
-        // Load the template image
-        const img = new Image();
-        img.src = 'path/to/your/template.png'; // 경로를 실제 이미지 경로로 변경하세요.
-        await new Promise((resolve) => { img.onload = resolve; });
-
-        // Add the template image to the PDF
-        pdf.addImage(img, 'PNG', 0, 0, 210, 297); // Adjust width and height as necessary
-
         // 기본 정보
         pdf.text(data['사업장명'], 40, 37);
         pdf.text(data['방류구번호'], 140, 37);
