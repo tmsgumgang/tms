@@ -93,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
         firstPage.drawText(formElements['시험일자'].value, { x: 100, y: 680, size: 12 });
 
         // 여기에 다른 폼 요소에 대한 코드를 추가합니다.
-        // 예:
         firstPage.drawText(formElements['pH_모델명'].value, { x: 100, y: 660, size: 12 });
         firstPage.drawText(formElements['pH_제작사'].value, { x: 200, y: 660, size: 12 });
         firstPage.drawText(formElements['pH_제작국'].value, { x: 300, y: 660, size: 12 });
