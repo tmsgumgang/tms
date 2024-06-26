@@ -85,24 +85,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const form = document.getElementById('form');
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
+        console.log("입력 데이터:", data);
 
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
         pdf.setFontSize(10);
 
-        // Load the template image
-        const img = new Image();
-        img.src = 'path/to/your/template.png'; // 경로를 실제 이미지 경로로 변경하세요.
-        await new Promise((resolve) => { img.onload = resolve; });
-
-        // Add the template image to the PDF
-        pdf.addImage(img, 'PNG', 0, 0, 210, 297); // Adjust width and height as necessary
-
         // 기본 정보
         console.log("기본 정보 삽입 중...");
-        pdf.text(data['사업장명'], 40, 37);
-        pdf.text(data['방류구번호'], 140, 37);
-        pdf.text(data['시험일자'], 40, 43);
+        pdf.text(data['사업장명'] || '', 40, 37);
+        pdf.text(data['방류구번호'] || '', 140, 37);
+        pdf.text(data['시험일자'] || '', 40, 43);
 
         // 측정기 모델
         const startY = 58;
@@ -111,19 +104,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const fields = ['pH', 'TOC', 'SS', 'TN', 'TP', '유량계', '자동시료채취기'];
         fields.forEach(field => {
-            pdf.text(data[`${field}_모델명`], 22, currentY);
-            pdf.text(data[`${field}_제작사`], 68, currentY);
-            pdf.text(data[`${field}_제작국`], 108, currentY);
+            pdf.text(data[`${field}_모델명`] || '', 22, currentY);
+            pdf.text(data[`${field}_제작사`] || '', 68, currentY);
+            pdf.text(data[`${field}_제작국`] || '', 108, currentY);
             currentY += stepY;
         });
 
         // 전송기 모델
-        pdf.text(data['DL_모델명'], 22, currentY);
-        pdf.text(data['DL_버전'], 68, currentY);
+        pdf.text(data['DL_모델명'] || '', 22, currentY);
+        pdf.text(data['DL_버전'] || '', 68, currentY);
         currentY += stepY;
 
-        pdf.text(data['FEP_모델명'], 22, currentY);
-        pdf.text(data['FEP_버전'], 68, currentY);
+        pdf.text(data['FEP_모델명'] || '', 22, currentY);
+        pdf.text(data['FEP_버전'] || '', 68, currentY);
         currentY += stepY;
 
         // 시험 종류
@@ -138,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pdf.text('상대정확도시험', 92, typesY);
         }
 
-        pdf.text(data['시험특이사항'], 22, typesY + 10);
+        pdf.text(data['시험특이사항'] || '', 22, typesY + 10);
 
         // 서명
         const signatures = ['sign-pad1', 'sign-pad2', 'sign-pad3'];
@@ -152,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     img.onload = resolve;
                     img.src = savedSignature;
                 });
+                console.log(`서명 이미지 로드 완료: ${signatures[i]}`);
                 const imgProps = pdf.getImageProperties(img);
                 const pdfWidth = 50;
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
