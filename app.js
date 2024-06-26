@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const { PDFDocument } = PDFLib;
     const signaturePads = {};
 
     document.querySelectorAll(".signature-pad").forEach(canvas => {
@@ -13,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.width = canvas.offsetWidth * ratio;
             canvas.height = canvas.offsetHeight * ratio;
             canvas.getContext("2d").scale(ratio, ratio);
-            signaturePad.clear();
+            signaturePad.clear(); // 캔버스 크기 변경 시 패드를 초기화합니다.
             loadSignature(canvas.id);
         }
 
@@ -34,6 +33,71 @@ document.addEventListener('DOMContentLoaded', () => {
             clearSignature(target);
         });
     });
+
+    async function savePDF() {
+        const form = document.getElementById('form');
+        const data = new FormData(form);
+
+        const pdfUrl = 'https://your-pdf-url-here.pdf'; // 업로드된 PDF 파일의 URL을 사용하세요.
+        const existingPdfBytes = await fetch(pdfUrl).then(res => res.arrayBuffer());
+        const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
+        const pages = pdfDoc.getPages();
+        const firstPage = pages[0];
+        const { width, height } = firstPage.getSize();
+
+        // 기본 정보
+        firstPage.drawText(data.get('사업장명') || '', { x: 130, y: height - 85, size: 12 });
+        firstPage.drawText(data.get('방류구번호') || '', { x: 350, y: height - 85, size: 12 });
+        firstPage.drawText(data.get('시험일자') || '', { x: 130, y: height - 105, size: 12 });
+
+        // 측정기 모델 정보
+        const models = ['pH', 'TOC', 'SS', 'TN', 'TP', '유량계', '자동시료채취기'];
+        models.forEach((model, index) => {
+            const offsetY = height - 155 - (index * 20);
+            firstPage.drawText(data.get(`${model}_모델명`) || '', { x: 60, y: offsetY, size: 12 });
+            firstPage.drawText(data.get(`${model}_제작사`) || '', { x: 200, y: offsetY, size: 12 });
+            firstPage.drawText(data.get(`${model}_제작국`) || '', { x: 340, y: offsetY, size: 12 });
+        });
+
+        // 전송기 모델 정보
+        firstPage.drawText(data.get('DL_모델명') || '', { x: 60, y: height - 335, size: 12 });
+        firstPage.drawText(data.get('DL_버전') || '', { x: 200, y: height - 335, size: 12 });
+        firstPage.drawText(data.get('FEP_모델명') || '', { x: 60, y: height - 355, size: 12 });
+        firstPage.drawText(data.get('FEP_버전') || '', { x: 200, y: height - 355, size: 12 });
+
+        // 시험 종류
+        if (data.get('통합시험')) firstPage.drawText('✔', { x: 50, y: height - 375, size: 12 });
+        if (data.get('확인검사')) firstPage.drawText('✔', { x: 150, y: height - 375, size: 12 });
+        if (data.get('상대정확도시험')) firstPage.drawText('✔', { x: 250, y: height - 375, size: 12 });
+
+        // 시험 특이사항
+        firstPage.drawText(data.get('시험특이사항') || '', { x: 60, y: height - 395, size: 12, maxWidth: 450 });
+
+        // 서명
+        for (let i = 1; i <= 3; i++) {
+            const padId = `sign-pad${i}`;
+            const savedSignature = localStorage.getItem(padId);
+            if (savedSignature) {
+                const img = new Image();
+                img.src = savedSignature;
+                img.onload = () => {
+                    const signatureImage = await pdfDoc.embedPng(savedSignature);
+                    const signatureDims = signatureImage.scale(0.5);
+                    firstPage.drawImage(signatureImage, {
+                        x: 150,
+                        y: height - (440 + (i * 40)),
+                        width: signatureDims.width,
+                        height: signatureDims.height,
+                    });
+                };
+            }
+        }
+
+        const pdfBytes = await pdfDoc.save();
+        download(pdfBytes, "현장확인서.pdf", "application/pdf");
+    }
+
+    document.getElementById('save-pdf').addEventListener('click', savePDF);
 
     function saveSignature(padId) {
         const signaturePad = signaturePads[padId];
@@ -59,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const canvas = document.getElementById(padId);
         const signaturePad = signaturePads[padId];
         const ctx = canvas.getContext('2d');
-        
+
         const img = new Image();
         img.onload = () => {
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -73,68 +137,4 @@ document.addEventListener('DOMContentLoaded', () => {
         signaturePad.clear();
         localStorage.removeItem(padId);
     }
-
-    document.getElementById('save-pdf').addEventListener('click', async () => {
-        const form = document.getElementById('form');
-        const formData = new FormData(form);
-
-        const existingPdfBytes = await fetch('https://사용자명.github.io/리포지토리명/3.수질자동측정기기 현장확인서 양식.pdf').then(res => res.arrayBuffer());
-
-        const pdfDoc = await PDFDocument.load(existingPdfBytes);
-        const pages = pdfDoc.getPages();
-        const firstPage = pages[0];
-
-        const formFields = {
-            '사업장명': formData.get('사업장명'),
-            '방류구번호': formData.get('방류구번호'),
-            '시험일자': formData.get('시험일자'),
-            'pH_모델명': formData.get('pH_모델명'),
-            'pH_제작사': formData.get('pH_제작사'),
-            'pH_제작국': formData.get('pH_제작국'),
-            'TOC_모델명': formData.get('TOC_모델명'),
-            'TOC_제작사': formData.get('TOC_제작사'),
-            'TOC_제작국': formData.get('TOC_제작국'),
-            'SS_모델명': formData.get('SS_모델명'),
-            'SS_제작사': formData.get('SS_제작사'),
-            'SS_제작국': formData.get('SS_제작국'),
-            'TN_모델명': formData.get('TN_모델명'),
-            'TN_제작사': formData.get('TN_제작사'),
-            'TN_제작국': formData.get('TN_제작국'),
-            'TP_모델명': formData.get('TP_모델명'),
-            'TP_제작사': formData.get('TP_제작사'),
-            'TP_제작국': formData.get('TP_제작국'),
-            '유량계_모델명': formData.get('유량계_모델명'),
-            '유량계_제작사': formData.get('유량계_제작사'),
-            '유량계_제작국': formData.get('유량계_제작국'),
-            '자동시료채취기_모델명': formData.get('자동시료채취기_모델명'),
-            '자동시료채취기_제작사': formData.get('자동시료채취기_제작사'),
-            '자동시료채취기_제작국': formData.get('자동시료채취기_제작국'),
-            'DL_모델명': formData.get('DL_모델명'),
-            'DL_버전': formData.get('DL_버전'),
-            'FEP_모델명': formData.get('FEP_모델명'),
-            'FEP_버전': formData.get('FEP_버전'),
-            '시험특이사항': formData.get('시험특이사항')
-        };
-
-        for (const key in formFields) {
-            if (formFields.hasOwnProperty(key)) {
-                firstPage.drawText(formFields[key], {
-                    x: 100, // 해당 필드의 x 위치
-                    y: 100, // 해당 필드의 y 위치
-                    size: 12,
-                });
-            }
-        }
-
-        const pdfBytes = await pdfDoc.save();
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = '수질자동측정기기_현장확인서.pdf';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    });
 });
