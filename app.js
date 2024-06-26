@@ -76,99 +76,97 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem(padId);
     }
 
+    const templateImageBase64 = "data:image/png;base64,이미지의Base64코드"; // Base64 코드로 변환한 이미지 데이터를 포함하세요.
+
     document.getElementById('save-pdf').addEventListener('click', async () => {
         const button = document.getElementById('save-pdf');
         button.disabled = true; // Disable the button to prevent multiple clicks
         button.textContent = '처리 중...'; // Change the button text to indicate processing
 
-        const form = document.getElementById('form');
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
+        try {
+            const form = document.getElementById('form');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
 
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        pdf.setFontSize(10);
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            pdf.setFontSize(10);
 
-        // Load the template image
-        const img = new Image();
-        img.src = 'path/to/your/image.png'; // 첨부된 이미지 경로로 변경하세요.
-        await new Promise((resolve, reject) => { 
-            img.onload = resolve; 
-            img.onerror = reject; 
-        });
+            // Add the template image to the PDF
+            pdf.addImage(templateImageBase64, 'PNG', 0, 0, 210, 297); // Adjust width and height as necessary
 
-        // Add the template image to the PDF
-        pdf.addImage(img, 'PNG', 0, 0, 210, 297); // Adjust width and height as necessary
+            // Fill in the form data into the template
+            pdf.text(data['사업장명'] || '', 42, 37);
+            pdf.text(data['방류구번호'] || '', 162, 37);
+            pdf.text(data['시험일자'] || '', 42, 43);
 
-        // Fill in the form data into the template
-        pdf.text(data['사업장명'] || '', 42, 37);
-        pdf.text(data['방류구번호'] || '', 162, 37);
-        pdf.text(data['시험일자'] || '', 42, 43);
+            // 측정기 모델
+            const startY = 84;
+            const stepY = 14;
+            let currentY = startY;
 
-        // 측정기 모델
-        const startY = 84;
-        const stepY = 14;
-        let currentY = startY;
+            const fields = ['pH', 'TOC', 'SS', 'TN', 'TP', '유량계', '자동시료채취기'];
+            fields.forEach(field => {
+                pdf.text(data[`${field}_모델명`] || '', 52, currentY);
+                pdf.text(data[`${field}_제작사`] || '', 112, currentY);
+                pdf.text(data[`${field}_제작국`] || '', 172, currentY);
+                currentY += stepY;
+            });
 
-        const fields = ['pH', 'TOC', 'SS', 'TN', 'TP', '유량계', '자동시료채취기'];
-        fields.forEach(field => {
-            pdf.text(data[`${field}_모델명`] || '', 52, currentY);
-            pdf.text(data[`${field}_제작사`] || '', 112, currentY);
-            pdf.text(data[`${field}_제작국`] || '', 172, currentY);
+            // 전송기 모델
+            pdf.text(data['DL_모델명'] || '', 52, currentY);
+            pdf.text(data['DL_버전'] || '', 112, currentY);
             currentY += stepY;
-        });
 
-        // 전송기 모델
-        pdf.text(data['DL_모델명'] || '', 52, currentY);
-        pdf.text(data['DL_버전'] || '', 112, currentY);
-        currentY += stepY;
+            pdf.text(data['FEP_모델명'] || '', 52, currentY);
+            pdf.text(data['FEP_버전'] || '', 112, currentY);
+            currentY += stepY;
 
-        pdf.text(data['FEP_모델명'] || '', 52, currentY);
-        pdf.text(data['FEP_버전'] || '', 112, currentY);
-        currentY += stepY;
-
-        // 시험 종류
-        const typesY = currentY + 20;
-        if (data['통합시험']) {
-            pdf.text('통합시험', 32, typesY);
-        }
-        if (data['확인검사']) {
-            pdf.text('확인검사', 92, typesY);
-        }
-        if (data['상대정확도시험']) {
-            pdf.text('상대정확도시험', 152, typesY);
-        }
-
-        pdf.text(data['시험특이사항'] || '', 42, typesY + 10);
-
-        // 서명
-        const signatures = ['sign-pad1', 'sign-pad2', 'sign-pad3'];
-        const yPositions = [204, 220, 236];
-
-        for (let i = 0; i < signatures.length; i++) {
-            const savedSignature = localStorage.getItem(signatures[i]);
-            if (savedSignature) {
-                const img = new Image();
-                await new Promise((resolve) => {
-                    img.onload = resolve;
-                    img.src = savedSignature;
-                });
-                const imgProps = pdf.getImageProperties(img);
-                const pdfWidth = 40;
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                pdf.addImage(savedSignature, 'PNG', 140, yPositions[i], pdfWidth, pdfHeight);
+            // 시험 종류
+            const typesY = currentY + 20;
+            if (data['통합시험']) {
+                pdf.text('통합시험', 32, typesY);
             }
-        }
+            if (data['확인검사']) {
+                pdf.text('확인검사', 92, typesY);
+            }
+            if (data['상대정확도시험']) {
+                pdf.text('상대정확도시험', 152, typesY);
+            }
 
-        const blob = pdf.output('blob');
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = '현장확인서.pdf';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+            pdf.text(data['시험특이사항'] || '', 42, typesY + 10);
+
+            // 서명
+            const signatures = ['sign-pad1', 'sign-pad2', 'sign-pad3'];
+            const yPositions = [204, 220, 236];
+
+            for (let i = 0; i < signatures.length; i++) {
+                const savedSignature = localStorage.getItem(signatures[i]);
+                if (savedSignature) {
+                    const img = new Image();
+                    await new Promise((resolve) => {
+                        img.onload = resolve;
+                        img.src = savedSignature;
+                    });
+                    const imgProps = pdf.getImageProperties(img);
+                    const pdfWidth = 40;
+                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                    pdf.addImage(savedSignature, 'PNG', 140, yPositions[i], pdfWidth, pdfHeight);
+                }
+            }
+
+            const blob = pdf.output('blob');
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '현장확인서.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+        }
 
         button.disabled = false;
         button.textContent = '제출';
