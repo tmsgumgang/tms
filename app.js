@@ -145,6 +145,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        pdf.save('현장확인서.pdf');
+        const blob = pdf.output('blob');
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '현장확인서.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     });
 });
