@@ -23,17 +23,19 @@
             background-color: #f2f2f2;
         }
         .container {
-            width: 100%;
-            max-width: 210mm;
+            width: 210mm;
+            height: 297mm;
             margin: 0 auto;
             padding: 20mm;
             box-sizing: border-box;
         }
         .signature-pad {
             border: 1px solid #000;
-            width: 100%;
-            max-width: 200px;
+            width: 200px;
             height: 100px;
+        }
+        .section {
+            margin-bottom: 20px;
         }
         #save-pdf {
             display: block;
@@ -147,7 +149,7 @@
                         <td><input type="checkbox" name="상대정확도시험" value="상대정확도시험"> 상대정확도시험</td>
                     </tr>
                 </table>
-                <textarea name="시험특이사항" placeholder="시험에서의 특이사항 입력" class="wide-input"></textarea>
+                <textarea name="시험특이사항" placeholder="시험에서의 특이사항 입력" class="wide-input" style="width: 100%;"></textarea>
             </div>
             <div class="section">
                 <h3>확인자 정보</h3>
