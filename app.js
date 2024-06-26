@@ -85,50 +85,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const pdf = new jsPDF('p', 'mm', 'a4');
         pdf.setFontSize(10);
 
-        // 기본 정보
-        pdf.text(data['사업장명'], 40, 37);
-        pdf.text(data['방류구번호'], 140, 37);
-        pdf.text(data['시험일자'], 40, 43);
+        const docWidth = pdf.internal.pageSize.getWidth();
+        const docHeight = pdf.internal.pageSize.getHeight();
 
-        // 측정기 모델
-        const startY = 58;
-        const stepY = 8;
-        let currentY = startY;
+        // html2canvas를 사용하여 HTML 요소를 캡처하고 이미지로 변환
+        const canvas = await html2canvas(document.querySelector('.container'));
+        const imgData = canvas.toDataURL('image/png');
+        
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = docWidth;
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-        const fields = ['pH', 'TOC', 'SS', 'TN', 'TP', '유량계', '자동시료채취기'];
-        fields.forEach(field => {
-            pdf.text(data[`${field}_모델명`], 22, currentY);
-            pdf.text(data[`${field}_제작사`], 68, currentY);
-            pdf.text(data[`${field}_제작국`], 108, currentY);
-            currentY += stepY;
-        });
+        // 이미지가 한 페이지에 맞도록 PDF에 추가
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
 
-        // 전송기 모델
-        pdf.text(data['DL_모델명'], 22, currentY);
-        pdf.text(data['DL_버전'], 68, currentY);
-        currentY += stepY;
-
-        pdf.text(data['FEP_모델명'], 22, currentY);
-        pdf.text(data['FEP_버전'], 68, currentY);
-        currentY += stepY;
-
-        // 시험 종류
-        const typesY = currentY + 10;
-        if (data['통합시험']) {
-            pdf.text('통합시험', 22, typesY);
-        }
-        if (data['확인검사']) {
-            pdf.text('확인검사', 52, typesY);
-        }
-        if (data['상대정확도시험']) {
-            pdf.text('상대정확도시험', 92, typesY);
-        }
-
-        pdf.text(data['시험특이사항'], 22, typesY + 10);
-
-        // 서명
+        // 저장된 서명을 PDF에 추가
         const signatures = ['sign-pad1', 'sign-pad2', 'sign-pad3'];
-        const yPositions = [187, 202, 217];
+        const signaturePositions = [
+            { x: 150, y: 235 },
+            { x: 150, y: 260 },
+            { x: 150, y: 285 }
+        ];
 
         for (let i = 0; i < signatures.length; i++) {
             const savedSignature = localStorage.getItem(signatures[i]);
@@ -139,9 +116,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     img.src = savedSignature;
                 });
                 const imgProps = pdf.getImageProperties(img);
-                const pdfWidth = 50;
+                const pdfWidth = 40;
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                pdf.addImage(savedSignature, 'PNG', 150, yPositions[i], pdfWidth, pdfHeight);
+                pdf.addImage(savedSignature, 'PNG', signaturePositions[i].x, signaturePositions[i].y, pdfWidth, pdfHeight);
             }
         }
 
