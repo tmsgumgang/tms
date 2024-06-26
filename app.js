@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const { PDFDocument } = PDFLib;
 
         // 여기에 템플릿 PDF의 경로를 넣으세요.
-        const existingPdfBytes = await fetch('https://github.com/tmsgumgang/tms/raw/main/3.%EC%88%98%EC%A7%88%EC%9E%90%EB%8F%99%EC%B8%A1%EC%A0%95%EA%B8%B0%EA%B8%B0%20%ED%98%84%EC%9E%A5%ED%99%95%EC%9D%B8%EC%84%9C%20%EC%96%91%EC%8B%9D.pdf').then(res => res.arrayBuffer());
+        const existingPdfBytes = await fetch('https://raw.githubusercontent.com/tmsgumgang/tms/main/3.%EC%88%98%EC%A7%88%EC%9E%90%EB%8F%99%EC%B8%A1%EC%A0%95%EA%B8%B0%EA%B8%B0%20%ED%98%84%EC%9E%A5%ED%99%95%EC%9D%B8%EC%84%9C%20%EC%96%91%EC%8B%9D.pdf').then(res => res.arrayBuffer());
 
         const pdfDoc = await PDFDocument.load(existingPdfBytes);
         const pages = pdfDoc.getPages();
