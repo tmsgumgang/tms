@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>수질자동측정기기 현장확인서</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 210mm;
+            height: 297mm;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #000;
+            box-sizing: border-box;
+            position: relative;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .checkbox {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        .test-options {
+            text-align: left;
+            white-space: nowrap;
+        }
+        .test-options label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .textarea-cell {
+            height: 300px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .table-cell {
+            width: 90px;
+            height: 3em;
+        }
+        .signature {
+            width: 300px;
+            height: 100px;
+            position: relative;
+        }
+        .signature canvas {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #000;
+        }
+        .signature-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            user-select: none;
+        }
+        .notice {
+            font-size: 12px;
+        }
+        .wide-cell {
+            width: 200px;
+        }
+        .fep-cell {
+            font-size: 12px;
+        }
+        select, input[type="date"], textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 5px;
+            font-size: 12px;
+        }
+        input[type="date"] {
+            cursor: pointer;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .button-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .small-font {
+            font-size: 10px;
+        }
+        .hidden-border {
+            border: none !important;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="pdf-content">
+        <h1>수질자동측정기기 현장확인서</h1>
+        <table>
+            <tr>
+                <th>사업장명</th>
+                <td colspan="4">
+                    <select>
+                        <option value="">선택</option>
+                        <option value="사업장1">사업장1</option>
+                        <option value="사업장2">사업장2</option>
+                        <!-- 추가 옵션 -->
+                    </select>
+                </td>
+                <th>방류구번호</th>
+                <td colspan="2">
+                    <select>
+                        <option value="">선택</option>
+                        <option value="#1">#1</option>
+                        <option value="#2">#2</option>
+                        <option value="#3">#3</option>
+                        <option value="#4">#4</option>
+                        <option value="#5">#5</option>
+                        <option value="#6">#6</option>
+                        <option value="#7">#7</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>시험일자</th>
+                <td colspan="7"><input type="date"></td>
+            </tr>
+            <tr>
+                <th rowspan="2">측정기 모델<br>(제작사, 제작국)</th>
+                <th class="table-cell">pH</th>
+                <th class="table-cell">SS</th>
+                <th class="table-cell">TOC</th>
+                <th class="table-cell">TN</th>
+                <th class="table-cell">TP</th>
+                <th class="table-cell">유량계</th>
+                <th class="table-cell">자동시료채취기</th>
+            </tr>
+            <tr>
+                <td class="table-cell" style="height: 9em;">
+                    <select>
+                        <option value="">선택</option>
+                        <option value="모델1">모델1 (제작사, 제작국)</option>
+                        <option value="모델2">모델2 (제작사, 제작국)</option>
+                        <!-- 추가 옵션 -->
+                    </select>
+                </td>
+                <td class="table-cell" style="height: 9em;">
+                    <select>
+                        <option value="">선택</option>
+                        <option value="모델1">모델1 (제작사, 제작국)</option>
+                        <option value="모델2">모델2 (제작사, 제작국)</option>
+                        <!-- 추가 옵션 -->
+                    </select>
+                </td>
+                <td class="table-cell" style="height: 9em;">
+                    <select>
+                        <option value="">선택</option>
+                        <option value="모델1">모델1 (제작사, 제작국)</option>
+                        <option value="모델2">모델2 (제작사, 제작국)</option>
+                        <!-- 추가 옵션 -->
+                    </select>
+                </td>
+                <td class="table-cell" style="height: 9em;">
+                    <select>
+                        <option value="">선택</option>
+                        <option value="모델1">모델1 (제작사, 제작국)</option>
+                        <option value="모델2">모델2 (제작사, 제작국)</option>
+                        <!-- 추가 옵션 -->
+                    </select>
+                </td>
+                <td class="table-cell" style="height: 9em;">
+                    <select>
+                        <option value="">선택</option>
+                        <option value="모델1">모델1 (제작사, 제작국)</option>
+                        <option value="모델2">모델2 (제작사, 제작국)</option>
+                        <!-- 추가 옵션 -->
+                    </select>
+                </td>
+                <td class="table-cell" style="height: 9em;">
+                    <select>
+                        <option value="">선택</option>
+                        <option value="모델1">모델1 (제작사, 제작국)</option>
+                        <option value="모델2">모델2 (제작사, 제작국)</option>
+                        <!-- 추가 옵션 -->
+                    </select>
+                </td>
+                <td class="table-cell" style="height: 9em;">
+                    <select>
+                        <option value="">선택</option>
+                        <option value="모델1">모델1 (제작사, 제작국)</option>
+                        <option value="모델2">모델2 (제작사, 제작국)</option>
+                        <!-- 추가 옵션 -->
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>전송기 모델<br>(모델명, 버전)</th>
+                <td colspan="3">
+                    <select>
+                        <option value="">선택</option>
+                        <option value="전송기1">전송기1 (모델명, 버전)</option>
+                        <option value="전송기2">전송기2 (모델명, 버전)</option>
+                        <!-- 추가 옵션 -->
+                    </select>
+                </td>
+                <th class="fep-cell">FEP<br>(모델명, 버전)</th>
+                <td colspan="3" class="fep-cell">
+                    <select>
+                        <option value="">선택</option>
+                        <option value="FEP1">FEP1 (모델명, 버전)</option>
+                        <option value="FEP2">FEP2 (모델명, 버전)</option>
+                        <!-- 추가 옵션 -->
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td rowspan="4" class="test-options">
+                    <label><input type="checkbox" class="checkbox" id="chk1"> 통합시험</label>
+                    <label><input type="checkbox" class="checkbox" id="chk2"> 확인검사</label>
+                    <label><input type="checkbox" class="checkbox" id="chk3"> 상대정확도시험</label>
+                </td>
+                <td colspan="7" class="textarea-cell">
+                    <div id="auto-generated-text" style="padding-bottom: 10px;"></div>
+                    <textarea style="height: calc(100% - 30px);"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <th>사업장</th>
+                <td colspan="2" class="wide-cell">
+                    <select>
+                        <option value="">선택</option>
+                        <option value="소속1">소속1</option>
+                        <option value="소속2">소속2</option>
+                    </select>
+                </td>
+                <td colspan="2" class="signature">
+                    <canvas class="signature-pad" id="signature-pad-1"></canvas>
+                    <div class="signature-label">성명</div>
+                    <button type="button" class="clear-signature" data-target="signature-pad-1">지우기</button>
+                </td>
+                <td colspan="2" class="signature">
+                    <canvas class="signature-pad" id="signature-pad-2"></canvas>
+                    <div class="signature-label">서명</div>
+                    <button type="button" class="clear-signature" data-target="signature-pad-2">지우기</button>
+                </td>
+            </tr>
+            <tr>
+                <th class="small-font">유지관리 업체</th>
+                <td colspan="2" class="wide-cell">
+                    <select>
+                        <option value="">선택</option>
+                        <option value="소속1">소속1</option>
+                        <option value="소속2">소속2</option>
+                    </select>
+                </td>
+                <td colspan="2" class="signature">
+                    <canvas class="signature-pad" id="signature-pad-3"></canvas>
+                    <div class="signature-label">성명</div>
+                    <button type="button" class="clear-signature" data-target="signature-pad-3">지우기</button>
+                </td>
+                <td colspan="2" class="signature">
+                    <canvas class="signature-pad" id="signature-pad-4"></canvas>
+                    <div class="signature-label">서명</div>
+                    <button type="button" class="clear-signature" data-target="signature-pad-4">지우기</button>
+                </td>
+            </tr>
+            <tr>
+                <th class="small-font">관제센터</th>
+                <td colspan="2" class="wide-cell">
+                    <select>
+                        <option value="">선택</option>
+                        <option value="소속1">소속1</option>
+                        <option value="소속2">소속2</option>
+                    </select>
+                </td>
+                <td colspan="2" class="signature">
+                    <canvas class="signature-pad" id="signature-pad-5"></canvas>
+                    <div class="signature-label">성명</div>
+                    <button type="button" class="clear-signature" data-target="signature-pad-5">지우기</button>
+                </td>
+                <td colspan="2" class="signature">
+                    <canvas class="signature-pad" id="signature-pad-6"></canvas>
+                    <div class="signature-label">서명</div>
+                    <button type="button" class="clear-signature" data-target="signature-pad-6">지우기</button>
+                </td>
+            </tr>
+        </table>
+        <p class="notice">※ 이외에 관제센터에서의 사후 확인과정에서 추가로 문제점이 발견될 수 있습니다.</p>
+    </div>
+    <div class="button-container">
+        <button id="submit-btn">제출</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const signaturePads = {};
+
+            document.querySelectorAll(".signature-pad").forEach(canvas => {
+                const signaturePad = new SignaturePad(canvas, {
+                    backgroundColor: 'rgb(255, 255, 255)'
+                });
+                signaturePads[canvas.id] = signaturePad;
+
+                function resizeCanvas() {
+                    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                    canvas.width = canvas.offsetWidth * ratio;
+                    canvas.height = canvas.offsetHeight * ratio;
+                    canvas.getContext("2d").scale(ratio, ratio);
+                    signaturePad.clear(); // 캔버스 크기 변경 시 패드를 초기화합니다.
+                }
+
+                window.addEventListener("resize", resizeCanvas);
+                resizeCanvas();
+            });
+
+            document.querySelectorAll('.clear-signature').forEach(button => {
+                button.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    signaturePads[target].clear();
+                });
+            });
+
+            const autoGeneratedText = document.getElementById('auto-generated-text');
+            const checkboxes = document.querySelectorAll('.checkbox');
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateAutoGeneratedText);
+            });
+
+            function updateAutoGeneratedText() {
+                const chk1 = document.getElementById('chk1').checked;
+                const chk2 = document.getElementById('chk2').checked;
+                const chk3 = document.getElementById('chk3').checked;
+
+                let text = '';
+                if (chk1 && chk2 && chk3) {
+                    text = '수질TMS 개선완료에 따른 통합 및 정도확인시험';
+                } else if (chk1 && chk2) {
+                    text = '수질TMS 개선완료에 따른 통합 및 확인검사';
+                } else if (chk1 && chk3) {
+                    text = '수질TMS 개선완료에 따른 통합 및 상대정확도시험';
+                } else if (chk2 && chk3) {
+                    text = '수질TMS 개선완료에 따른 정도확인시험';
+                } else if (chk1) {
+                    text = '수질TMS 개선완료에 따른 통합시험';
+                } else if (chk2) {
+                    text = '수질TMS 개선완료에 따른 확인검사';
+                } else if (chk3) {
+                    text = '수질TMS 개선완료에 따른 상대정확도시험';
+                }
+                autoGeneratedText.textContent = text;
+            }
+
+            document.getElementById('submit-btn').addEventListener('click', async function() {
+                // Add hidden-border class to input elements for PDF
+                document.querySelectorAll('select, input[type="date"], textarea').forEach(input => {
+                    input.classList.add('hidden-border');
+                });
+
+                // Add hidden-border class to signature pads for PDF
+                document.querySelectorAll('.signature-pad').forEach(canvas => {
+                    canvas.classList.add('hidden-border');
+                });
+
+                // Hide clear-signature buttons
+                document.querySelectorAll('.clear-signature').forEach(button => {
+                    button.classList.add('hidden');
+                });
+
+                try {
+                    const canvas = await html2canvas(document.getElementById('pdf-content'), { scale: 4 }); // Scale up for higher resolution
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0); // Use maximum quality
+                    const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+                    const width = pdf.internal.pageSize.getWidth();
+                    const height = pdf.internal.pageSize.getHeight();
+                    pdf.addImage(imgData, 'JPEG', 0, 0, width, height);
+                    pdf.save('현장확인서.pdf');
+                } catch (error) {
+                    console.error('PDF 생성 중 오류가 발생했습니다:', error);
+                } finally {
+                    // Remove hidden-border class from input elements after PDF generation
+                    document.querySelectorAll('select, input[type="date"], textarea').forEach(input => {
+                        input.classList.remove('hidden-border');
+                    });
+
+                    // Remove hidden-border class from signature pads after PDF generation
+                    document.querySelectorAll('.signature-pad').forEach(canvas => {
+                        canvas.classList.remove('hidden-border');
+                    });
+
+                    // Show clear-signature buttons
+                    document.querySelectorAll('.clear-signature').forEach(button => {
+                        button.classList.remove('hidden');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
