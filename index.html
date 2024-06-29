@@ -118,6 +118,39 @@
         .hidden {
             display: none;
         }
+        .dropdown-container {
+            position: relative;
+            width: 100%;
+        }
+        .dropdown-input {
+            width: 100%;
+            padding: 8px; /* 높이를 더 크게 설정 */
+            box-sizing: border-box;
+            font-size: 12px;
+            line-height: 1.5;
+            height: auto;
+        }
+        .dropdown-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 150px;
+            border: 1px solid #ccc;
+            background-color: white;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .dropdown-item {
+            padding: 5px;
+            cursor: pointer;
+        }
+        .dropdown-item:hover {
+            background-color: #f0f0f0;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -127,15 +160,21 @@
             <tr>
                 <th>사업장명</th>
                 <td colspan="4">
-                    <select name="business">
-                        <option value="">선택</option>
-                    </select>
+                    <div class="dropdown-container">
+                        <input type="text" class="dropdown-input" placeholder="선택 또는 검색" id="business-input">
+                        <div class="dropdown-list hidden" id="business-list">
+                            <div class="dropdown-item" data-value="">선택</div>
+                        </div>
+                    </div>
                 </td>
                 <th>방류구번호</th>
                 <td colspan="2">
-                    <select name="discharge">
-                        <option value="">선택</option>
-                    </select>
+                    <div class="dropdown-container">
+                        <input type="text" class="dropdown-input" placeholder="선택 또는 검색" id="discharge-input">
+                        <div class="dropdown-list hidden" id="discharge-list">
+                            <div class="dropdown-item" data-value="">선택</div>
+                        </div>
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -154,53 +193,80 @@
             </tr>
             <tr>
                 <td class="table-cell" style="height: 9em;">
-                    <select name="ph">
-                        <option value="">선택</option>
-                    </select>
+                    <div class="dropdown-container">
+                        <input type="text" class="dropdown-input" placeholder="선택 또는 검색" id="ph-input">
+                        <div class="dropdown-list hidden" id="ph-list">
+                            <div class="dropdown-item" data-value="">선택</div>
+                        </div>
+                    </div>
                 </td>
                 <td class="table-cell" style="height: 9em;">
-                    <select name="ss">
-                        <option value="">선택</option>
-                    </select>
+                    <div class="dropdown-container">
+                        <input type="text" class="dropdown-input" placeholder="선택 또는 검색" id="ss-input">
+                        <div class="dropdown-list hidden" id="ss-list">
+                            <div class="dropdown-item" data-value="">선택</div>
+                        </div>
+                    </div>
                 </td>
                 <td class="table-cell" style="height: 9em;">
-                    <select name="toc">
-                        <option value="">선택</option>
-                    </select>
+                    <div class="dropdown-container">
+                        <input type="text" class="dropdown-input" placeholder="선택 또는 검색" id="toc-input">
+                        <div class="dropdown-list hidden" id="toc-list">
+                            <div class="dropdown-item" data-value="">선택</div>
+                        </div>
+                    </div>
                 </td>
                 <td class="table-cell" style="height: 9em;">
-                    <select name="tn">
-                        <option value="">선택</option>
-                    </select>
+                    <div class="dropdown-container">
+                        <input type="text" class="dropdown-input" placeholder="선택 또는 검색" id="tn-input">
+                        <div class="dropdown-list hidden" id="tn-list">
+                            <div class="dropdown-item" data-value="">선택</div>
+                        </div>
+                    </div>
                 </td>
                 <td class="table-cell" style="height: 9em;">
-                    <select name="tp">
-                        <option value="">선택</option>
-                    </select>
+                    <div class="dropdown-container">
+                        <input type="text" class="dropdown-input" placeholder="선택 또는 검색" id="tp-input">
+                        <div class="dropdown-list hidden" id="tp-list">
+                            <div class="dropdown-item" data-value="">선택</div>
+                        </div>
+                    </div>
                 </td>
                 <td class="table-cell" style="height: 9em;">
-                    <select name="flowmeter">
-                        <option value="">선택</option>
-                    </select>
+                    <div class="dropdown-container">
+                        <input type="text" class="dropdown-input" placeholder="선택 또는 검색" id="flowmeter-input">
+                        <div class="dropdown-list hidden" id="flowmeter-list">
+                            <div class="dropdown-item" data-value="">선택</div>
+                        </div>
+                    </div>
                 </td>
                 <td class="table-cell" style="height: 9em;">
-                    <select name="sampler">
-                        <option value="">선택</option>
-                    </select>
+                    <div class="dropdown-container">
+                        <input type="text" class="dropdown-input" placeholder="선택 또는 검색" id="sampler-input">
+                        <div class="dropdown-list hidden" id="sampler-list">
+                            <div class="dropdown-item" data-value="">선택</div>
+                        </div>
+                    </div>
                 </td>
             </tr>
             <tr>
                 <th>전송기 모델<br>(모델명, 버전)</th>
                 <td colspan="3">
-                    <select name="transmitter">
-                        <option value="">선택</option>
-                    </select>
+                    <div class="dropdown-container">
+                        <input type="text" class="dropdown-input" placeholder="선택 또는 검색" id="transmitter-input">
+                        <div class="dropdown-list hidden" id="transmitter-list">
+                            <div class="dropdown-item" data-value="">선택</div>
+                        </div>
+                    </div>
                 </td>
                 <th class="fep-cell">FEP<br>(모델명, 버전)</th>
                 <td colspan="3" class="fep-cell">
-                    <select name="fep">
-                        <option value="">선택</option>
-                    </select>
+                    <div class="dropdown-container">
+                        <input type="text" class="dropdown-input" placeholder="선택 또는 검색" id="fep-input">
+                        <div class="dropdown-list hidden" id="fep-list">
+                            <div class="dropdown-item" data-value="">선택</div>
+                        </div>
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -217,9 +283,12 @@
             <tr>
                 <th>사업장</th>
                 <td colspan="2" class="wide-cell">
-                    <select name="company">
-                        <option value="">선택</option>
-                    </select>
+                    <div class="dropdown-container">
+                        <input type="text" class="dropdown-input" placeholder="선택 또는 검색" id="company-input">
+                        <div class="dropdown-list hidden" id="company-list">
+                            <div class="dropdown-item" data-value="">선택</div>
+                        </div>
+                    </div>
                 </td>
                 <td colspan="2" class="signature">
                     <canvas class="signature-pad" id="signature-pad-1"></canvas>
@@ -235,11 +304,12 @@
             <tr>
                 <th class="small-font">유지관리 업체</th>
                 <td colspan="2" class="wide-cell">
-                    <select name="maintenance">
-                        <option value="">선택</option>
-                        <option value="소속1">소속1</option>
-                        <option value="소속2">소속2</option>
-                    </select>
+                    <div class="dropdown-container">
+                        <input type="text" class="dropdown-input" placeholder="선택 또는 검색" id="maintenance-input">
+                        <div class="dropdown-list hidden" id="maintenance-list">
+                            <div class="dropdown-item" data-value="">선택</div>
+                        </div>
+                    </div>
                 </td>
                 <td colspan="2" class="signature">
                     <canvas class="signature-pad" id="signature-pad-3"></canvas>
@@ -255,11 +325,12 @@
             <tr>
                 <th class="small-font">관제센터</th>
                 <td colspan="2" class="wide-cell">
-                    <select name="control">
-                        <option value="">선택</option>
-                        <option value="소속1">소속1</option>
-                        <option value="소속2">소속2</option>
-                    </select>
+                    <div class="dropdown-container">
+                        <input type="text" class="dropdown-input" placeholder="선택 또는 검색" id="control-input">
+                        <div class="dropdown-list hidden" id="control-list">
+                            <div class="dropdown-item" data-value="">선택</div>
+                        </div>
+                    </div>
                 </td>
                 <td colspan="2" class="signature">
                     <canvas class="signature-pad" id="signature-pad-5"></canvas>
@@ -344,7 +415,7 @@
 
             document.getElementById('submit-btn').addEventListener('click', async function() {
                 // Add hidden-border class to input elements for PDF
-                document.querySelectorAll('select, input[type="date"], textarea').forEach(input => {
+                document.querySelectorAll('select, input[type="date"], textarea, .dropdown-input').forEach(input => {
                     input.classList.add('hidden-border');
                 });
 
@@ -370,7 +441,7 @@
                     console.error('PDF 생성 중 오류가 발생했습니다:', error);
                 } finally {
                     // Remove hidden-border class from input elements after PDF generation
-                    document.querySelectorAll('select, input[type="date"], textarea').forEach(input => {
+                    document.querySelectorAll('select, input[type="date"], textarea, .dropdown-input').forEach(input => {
                         input.classList.remove('hidden-border');
                     });
 
@@ -386,7 +457,43 @@
                 }
             });
 
-            // 구글 스프레드시트에서 데이터 가져오기
+            const dropdownContainers = document.querySelectorAll('.dropdown-container');
+
+            dropdownContainers.forEach(container => {
+                const input = container.querySelector('.dropdown-input');
+                const list = container.querySelector('.dropdown-list');
+
+                input.addEventListener('focus', function () {
+                    list.classList.remove('hidden');
+                });
+
+                input.addEventListener('input', function () {
+                    const filter = this.value.toLowerCase();
+                    const items = list.querySelectorAll('.dropdown-item'); // items 선언을 이벤트 핸들러 내부로 이동
+
+                    items.forEach(item => {
+                        const text = item.textContent.toLowerCase();
+                        item.style.display = text.includes(filter) ? '' : 'none';
+                    });
+                });
+
+                list.addEventListener('click', function (event) {
+                    if (event.target.classList.contains('dropdown-item')) {
+                        input.value = event.target.textContent;
+                        list.classList.add('hidden');
+                        if (input.id === 'business-input') {
+                            fillDataForBusiness(event.target.textContent);
+                        }
+                    }
+                });
+
+                document.addEventListener('click', function (event) {
+                    if (!container.contains(event.target)) {
+                        list.classList.add('hidden');
+                    }
+                });
+            });
+
             async function fetchSpreadsheetData() {
                 const apiKey = 'AIzaSyDvdii8oa2Hlr_yDIJLTszMSBxJ9rcuPlQ';
                 const spreadsheetId = '1Z0XxwxORkocAb-EURCpuZ6RcR72QQWFqiIwret2CgY0';
@@ -405,56 +512,68 @@
                 }
             }
 
-            // 드롭다운 메뉴에 옵션 추가하기
+            let spreadsheetData = [];
+
             async function updateDropdowns() {
                 const data = await fetchSpreadsheetData();
                 if (data) {
-                    const businessDropdown = document.querySelector('select[name="business"]');
-                    const dischargeDropdown = document.querySelector('select[name="discharge"]');
-                    const phDropdown = document.querySelector('select[name="ph"]');
-                    const ssDropdown = document.querySelector('select[name="ss"]');
-                    const tocDropdown = document.querySelector('select[name="toc"]');
-                    const tnDropdown = document.querySelector('select[name="tn"]');
-                    const tpDropdown = document.querySelector('select[name="tp"]');
-                    const flowmeterDropdown = document.querySelector('select[name="flowmeter"]');
-                    const samplerDropdown = document.querySelector('select[name="sampler"]');
-                    const transmitterDropdown = document.querySelector('select[name="transmitter"]');
-                    const fepDropdown = document.querySelector('select[name="fep"]');
+                    spreadsheetData = data; // 스프레드시트 데이터를 전역 변수에 저장
 
-                    const dropdowns = [
-                        businessDropdown,
-                        dischargeDropdown,
-                        phDropdown,
-                        ssDropdown,
-                        tocDropdown,
-                        tnDropdown,
-                        tpDropdown,
-                        flowmeterDropdown,
-                        samplerDropdown,
-                        transmitterDropdown,
-                        fepDropdown
-                    ];
+                    const dropdowns = {
+                        business: document.getElementById('business-list'),
+                        discharge: document.getElementById('discharge-list'),
+                        ph: document.getElementById('ph-list'),
+                        ss: document.getElementById('ss-list'),
+                        toc: document.getElementById('toc-list'),
+                        tn: document.getElementById('tn-list'),
+                        tp: document.getElementById('tp-list'),
+                        flowmeter: document.getElementById('flowmeter-list'),
+                        sampler: document.getElementById('sampler-list'),
+                        transmitter: document.getElementById('transmitter-list'),
+                        fep: document.getElementById('fep-list'),
+                        company: document.getElementById('company-list'),
+                        maintenance: document.getElementById('maintenance-list'),
+                        control: document.getElementById('control-list')
+                    };
 
-                    dropdowns.forEach(dropdown => {
-                        dropdown.innerHTML = '<option value="">선택</option>';
-                    });
+                    for (let key in dropdowns) {
+                        dropdowns[key].innerHTML = '<div class="dropdown-item" data-value="">선택</div>';
+                    }
 
                     for (let i = 0; i < data.length; i++) {
                         const row = data[i];
                         for (let j = 0; j < row.length; j++) {
-                            const option = document.createElement('option');
-                            option.value = row[j];
-                            option.textContent = row[j];
-                            if (dropdowns[j]) {
-                                dropdowns[j].appendChild(option);
+                            const item = document.createElement('div');
+                            item.classList.add('dropdown-item');
+                            item.setAttribute('data-value', row[j]);
+                            item.textContent = row[j];
+                            if (dropdowns[Object.keys(dropdowns)[j]]) {
+                                dropdowns[Object.keys(dropdowns)[j]].appendChild(item);
                             }
                         }
                     }
                 }
             }
 
-            // 페이지 로드 시 드롭다운 메뉴 업데이트
-            updateDropdowns(); // DOMContentLoaded 이벤트 리스너에서 중복 호출 방지
+            function fillDataForBusiness(businessName) {
+                const businessRow = spreadsheetData.find(row => row[0] === businessName);
+                if (businessRow) {
+                    document.getElementById('ph-input').value = businessRow[1] || '';
+                    document.getElementById('ss-input').value = businessRow[2] || '';
+                    document.getElementById('toc-input').value = businessRow[3] || '';
+                    document.getElementById('tn-input').value = businessRow[4] || '';
+                    document.getElementById('tp-input').value = businessRow[5] || '';
+                    document.getElementById('flowmeter-input').value = businessRow[6] || '';
+                    document.getElementById('sampler-input').value = businessRow[7] || '';
+                    document.getElementById('transmitter-input').value = businessRow[8] || '';
+                    document.getElementById('fep-input').value = businessRow[9] || '';
+                    document.getElementById('company-input').value = businessRow[10] || '';
+                    document.getElementById('maintenance-input').value = businessRow[11] || '';
+                    // 관제센터는 자동 입력에서 제외
+                }
+            }
+
+            updateDropdowns();
         });
     </script>
 </body>
