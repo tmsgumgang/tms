@@ -454,9 +454,7 @@
             }
 
             // 페이지 로드 시 드롭다운 메뉴 업데이트
-            document.addEventListener('DOMContentLoaded', function () {
-                updateDropdowns();
-            });
+            updateDropdowns(); // DOMContentLoaded 이벤트 리스너에서 중복 호출 방지
         });
     </script>
 </body>
